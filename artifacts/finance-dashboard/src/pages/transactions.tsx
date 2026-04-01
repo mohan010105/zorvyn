@@ -6,11 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Search, Plus, Trash2, Edit, Download } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Search, Plus, Trash2, Edit, Download, WalletIcon, TrendingUpIcon, TrendingDownIcon, FilterIcon } from "lucide-react";
 import { TransactionModal } from "@/components/transaction-modal";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Transactions() {
   const { isAdmin } = useRole();
@@ -30,12 +32,12 @@ export default function Transactions() {
   const deleteMutation = useDeleteTransaction();
 
   const handleDelete = async (id: number) => {
-    if (!confirm("Are you sure you want to delete this transaction?")) return;
+    if (!confirm("Delete this transaction? This cannot be undone.")) return;
     try {
       await deleteMutation.mutateAsync({ id });
       toast({ title: "Transaction deleted" });
       refetch();
-    } catch (err) {
+    } catch {
       toast({ title: "Failed to delete", variant: "destructive" });
     }
   };
@@ -52,137 +54,219 @@ export default function Transactions() {
 
   const handleExportCSV = () => {
     if (!transactions || transactions.length === 0) return;
-    
     const headers = ["Date", "Description", "Category", "Type", "Amount"];
     const csvContent = [
       headers.join(","),
-      ...transactions.map(t => 
+      ...transactions.map(t =>
         `"${t.date}","${t.description}","${t.category}","${t.type}","${t.amount}"`
       )
     ].join("\n");
-
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", "transactions.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "transactions.csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+      className="space-y-5 max-w-7xl mx-auto"
+    >
+      {/* Page header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Transactions</h2>
-          <p className="text-muted-foreground">Manage and view your financial history.</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            {transactions ? `${transactions.length} records found` : 'Manage your financial history'}
+          </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={handleExportCSV} disabled={!transactions?.length}>
-            <Download className="mr-2 h-4 w-4" />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExportCSV}
+            disabled={!transactions || transactions.length === 0}
+            className="h-9 rounded-xl border-border/60 bg-background/60 backdrop-blur-sm hover:bg-muted/70 text-sm font-medium"
+          >
+            <Download className="h-4 w-4 mr-2" />
             Export CSV
           </Button>
           {isAdmin && (
-            <Button onClick={openCreateModal}>
-              <Plus className="mr-2 h-4 w-4" />
+            <Button
+              size="sm"
+              onClick={openCreateModal}
+              className="h-9 rounded-xl text-sm font-semibold shadow-sm shadow-primary/20"
+            >
+              <Plus className="h-4 w-4 mr-2" />
               Add Transaction
             </Button>
           )}
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row items-center gap-4 bg-card p-4 rounded-lg border border-border">
-        <div className="relative flex-1 w-full">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input 
-            placeholder="Search transactions..." 
-            className="pl-9 w-full bg-background"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-        <Select value={typeFilter} onValueChange={setTypeFilter}>
-          <SelectTrigger className="w-full sm:w-[150px] bg-background">
-            <SelectValue placeholder="Type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Types</SelectItem>
-            <SelectItem value="income">Income</SelectItem>
-            <SelectItem value="expense">Expense</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      {/* Filters */}
+      <Card className="glass-card border-0">
+        <CardContent className="p-4">
+          <div className="flex flex-col sm:flex-row items-center gap-3">
+            <div className="relative flex-1 w-full">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search transactions..."
+                className="pl-9 w-full bg-background/60 border-border/50 rounded-xl h-9 text-sm"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <FilterIcon className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+              <Select value={typeFilter} onValueChange={setTypeFilter}>
+                <SelectTrigger className="w-full sm:w-[140px] bg-background/60 border-border/50 rounded-xl h-9 text-sm font-medium">
+                  <SelectValue placeholder="Filter type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Types</SelectItem>
+                  <SelectItem value="income">Income</SelectItem>
+                  <SelectItem value="expense">Expense</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-      <div className="border border-border rounded-lg bg-card overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Date</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead className="text-right">Amount</TableHead>
-              {isAdmin && <TableHead className="w-[100px] text-right">Actions</TableHead>}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              Array.from({ length: 5 }).map((_, i) => (
-                <TableRow key={i}>
-                  <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-48" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                  <TableCell><Skeleton className="h-5 w-16 rounded-full" /></TableCell>
-                  <TableCell className="text-right"><Skeleton className="h-4 w-16 ml-auto" /></TableCell>
-                  {isAdmin && <TableCell><Skeleton className="h-8 w-16 ml-auto" /></TableCell>}
-                </TableRow>
-              ))
-            ) : transactions?.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={isAdmin ? 6 : 5} className="h-32 text-center text-muted-foreground">
-                  No transactions found.
-                </TableCell>
+      {/* Table */}
+      <Card className="glass-card border-0 overflow-hidden">
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-muted/40 hover:bg-muted/40 border-b border-border/60">
+                <TableHead className="text-xs font-semibold text-muted-foreground uppercase tracking-wide w-[110px]">Date</TableHead>
+                <TableHead className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Description</TableHead>
+                <TableHead className="text-xs font-semibold text-muted-foreground uppercase tracking-wide hidden sm:table-cell">Category</TableHead>
+                <TableHead className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Type</TableHead>
+                <TableHead className="text-xs font-semibold text-muted-foreground uppercase tracking-wide text-right">Amount</TableHead>
+                {isAdmin && <TableHead className="w-[80px]" />}
               </TableRow>
-            ) : (
-              transactions?.map((t) => (
-                <TableRow key={t.id} className="group">
-                  <TableCell className="font-medium">{formatDate(t.date)}</TableCell>
-                  <TableCell>{t.description}</TableCell>
-                  <TableCell>{t.category}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className={t.type === 'income' ? 'bg-success/10 text-success border-success/20' : 'bg-destructive/10 text-destructive border-destructive/20'}>
-                      {t.type}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className={`text-right font-medium ${t.type === 'income' ? 'text-success' : ''}`}>
-                    {t.type === 'income' ? '+' : '-'}{formatCurrency(t.amount)}
-                  </TableCell>
-                  {isAdmin && (
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary" onClick={() => openEditModal(t.id)}>
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={() => handleDelete(t.id)}>
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+            </TableHeader>
+            <TableBody>
+              {isLoading ? (
+                Array.from({ length: 6 }).map((_, i) => (
+                  <TableRow key={i} className="border-b border-border/40">
+                    <TableCell><Skeleton className="h-3.5 w-20" /></TableCell>
+                    <TableCell><Skeleton className="h-3.5 w-48" /></TableCell>
+                    <TableCell className="hidden sm:table-cell"><Skeleton className="h-5 w-20 rounded-full" /></TableCell>
+                    <TableCell><Skeleton className="h-5 w-16 rounded-full" /></TableCell>
+                    <TableCell className="text-right"><Skeleton className="h-3.5 w-16 ml-auto" /></TableCell>
+                    {isAdmin && <TableCell><Skeleton className="h-7 w-14 ml-auto" /></TableCell>}
+                  </TableRow>
+                ))
+              ) : transactions?.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={isAdmin ? 6 : 5}>
+                    <div className="flex flex-col items-center justify-center py-16 text-center">
+                      <div className="h-14 w-14 rounded-2xl bg-muted/60 flex items-center justify-center mb-4">
+                        <WalletIcon className="h-7 w-7 text-muted-foreground" />
                       </div>
-                    </TableCell>
-                  )}
+                      <p className="text-sm font-medium text-foreground mb-1">No transactions found</p>
+                      <p className="text-xs text-muted-foreground max-w-[220px]">
+                        {search || typeFilter !== "all"
+                          ? "Try adjusting your search or filters."
+                          : "Add your first transaction to start tracking your finances."}
+                      </p>
+                    </div>
+                  </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
+              ) : (
+                <AnimatePresence>
+                  {transactions?.map((t, i) => (
+                    <motion.tr
+                      key={t.id}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: i * 0.02, duration: 0.2 }}
+                      className="group border-b border-border/40 hover:bg-muted/30 transition-colors"
+                    >
+                      <TableCell className="text-xs text-muted-foreground font-medium py-3.5 w-[110px]">
+                        {formatDate(t.date)}
+                      </TableCell>
+                      <TableCell className="py-3.5">
+                        <div className="flex items-center gap-2.5">
+                          <div className={`h-7 w-7 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                            t.type === 'income' ? 'icon-bg-green' : 'icon-bg-red'
+                          }`}>
+                            {t.type === 'income'
+                              ? <TrendingUpIcon className="h-3.5 w-3.5 text-emerald-600" />
+                              : <TrendingDownIcon className="h-3.5 w-3.5 text-red-500" />
+                            }
+                          </div>
+                          <span className="text-sm font-medium text-foreground truncate max-w-[200px]">{t.description}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="hidden sm:table-cell py-3.5">
+                        <Badge variant="outline" className="text-xs font-medium bg-muted/40 border-border/60 rounded-lg">
+                          {t.category}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="py-3.5">
+                        <Badge
+                          variant="outline"
+                          className={`text-xs font-semibold rounded-lg ${
+                            t.type === 'income'
+                              ? 'bg-emerald-500/8 border-emerald-500/25 text-emerald-600'
+                              : 'bg-red-500/8 border-red-500/25 text-red-500'
+                          }`}
+                        >
+                          {t.type}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right py-3.5">
+                        <span className={`text-sm font-bold tabular-nums ${t.type === 'income' ? 'text-emerald-500' : 'text-red-500'}`}>
+                          {t.type === 'income' ? '+' : '−'}{formatCurrency(t.amount)}
+                        </span>
+                      </TableCell>
+                      {isAdmin && (
+                        <TableCell className="py-3.5">
+                          <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10"
+                              onClick={() => openEditModal(t.id)}
+                            >
+                              <Edit className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7 rounded-lg text-muted-foreground hover:text-red-500 hover:bg-red-500/10"
+                              onClick={() => handleDelete(t.id)}
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      )}
+                    </motion.tr>
+                  ))}
+                </AnimatePresence>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </Card>
 
-      <TransactionModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+      <TransactionModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
         transactionId={editingTransactionId}
         onSuccess={() => refetch()}
       />
-    </div>
+    </motion.div>
   );
 }
