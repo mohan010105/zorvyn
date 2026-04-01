@@ -1,6 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { useRole } from "./role-provider";
 import { useTheme } from "next-themes";
+import { useAuth } from "@/context/auth-context";
 import { Button } from "@/components/ui/button";
 import { 
   Select, 
@@ -9,6 +10,14 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { TransactionModal } from "@/components/transaction-modal";
 import { useQueryClient } from "@tanstack/react-query";
 import { 
@@ -17,12 +26,14 @@ import {
   LineChart, 
   Moon, 
   Sun,
-  Wallet,
   Menu,
   Plus,
   TrendingUp,
   Shield,
-  Eye
+  Eye,
+  LogOut,
+  User,
+  ChevronDown
 } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -31,9 +42,20 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const { role, setRole } = useRole();
   const { theme, setTheme } = useTheme();
+  const { user, logout } = useAuth();
+  const [, navigate] = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
   const queryClient = useQueryClient();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
+  const userInitials = user?.fullName
+    ? user.fullName.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
+    : role === "Admin" ? "A" : "V";
 
   const navItems = [
     { href: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -177,12 +199,42 @@ export function Layout({ children }: { children: React.ReactNode }) {
               <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
             </Button>
 
-            {/* Avatar */}
-            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-primary to-chart-2 flex items-center justify-center shadow-sm cursor-pointer flex-shrink-0">
-              <span className="text-xs font-bold text-white">
-                {role === 'Admin' ? 'A' : 'V'}
-              </span>
-            </div>
+            {/* User menu */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex items-center gap-2 rounded-xl px-2 py-1.5 hover:bg-muted/70 transition-colors group">
+                  <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-chart-2 flex items-center justify-center shadow-sm flex-shrink-0">
+                    <span className="text-xs font-bold text-white">{userInitials}</span>
+                  </div>
+                  <div className="hidden sm:block text-left">
+                    <p className="text-xs font-semibold leading-none">{user?.fullName ?? "User"}</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5 truncate max-w-[100px]">{user?.email ?? ""}</p>
+                  </div>
+                  <ChevronDown className="h-3.5 w-3.5 text-muted-foreground hidden sm:block group-hover:text-foreground transition-colors" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-52 rounded-xl">
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col gap-0.5">
+                    <p className="text-sm font-semibold">{user?.fullName ?? "User"}</p>
+                    <p className="text-xs text-muted-foreground truncate">{user?.email ?? ""}</p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem disabled className="text-xs text-muted-foreground">
+                  <User className="h-3.5 w-3.5 mr-2" />
+                  Profile settings
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={handleLogout}
+                  className="text-red-500 focus:text-red-500 focus:bg-red-500/8 cursor-pointer"
+                >
+                  <LogOut className="h-3.5 w-3.5 mr-2" />
+                  Sign out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </header>
 

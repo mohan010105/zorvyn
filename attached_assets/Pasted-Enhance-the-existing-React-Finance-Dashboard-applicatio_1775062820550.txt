@@ -1,0 +1,255 @@
+Enhance the existing React Finance Dashboard application by implementing a **complete authentication flow** including **Login, Signup, and Reset Password pages**.
+
+The authentication system should work fully on the frontend using **LocalStorage and React Context API** to simulate a real authentication system.
+
+Do not break any existing dashboard features.
+
+The application must still run correctly using:
+
+npm install
+npm run dev
+
+---
+
+TECH STACK
+
+Use the existing stack:
+
+React.js (Vite)
+JavaScript
+Tailwind CSS
+React Router DOM
+React Context API
+LocalStorage
+
+---
+
+AUTHENTICATION STRUCTURE
+
+Create the following structure:
+
+src/
+auth/
+Login.jsx
+Signup.jsx
+ResetPassword.jsx
+
+components/
+ProtectedRoute.jsx
+
+context/
+AuthContext.jsx
+
+---
+
+AUTHENTICATION FLOW
+
+1. SIGNUP PAGE
+
+Create a signup page with fields:
+
+Full Name
+Email
+Password
+Confirm Password
+
+Validation requirements:
+
+Email must be valid format
+Password minimum 6 characters
+Passwords must match
+
+When signup succeeds:
+
+Save user data to LocalStorage
+Automatically redirect to Login page
+
+---
+
+2. LOGIN PAGE
+
+Create a login form with:
+
+Email
+Password
+
+Login logic:
+
+Check entered credentials against LocalStorage users
+If valid:
+
+Save logged-in user to LocalStorage
+Redirect to Dashboard
+
+If invalid:
+
+Show error message.
+
+---
+
+3. RESET PASSWORD PAGE
+
+Create a reset password form with:
+
+Email
+New Password
+Confirm Password
+
+Behavior:
+
+If email exists in stored users
+Update the password
+Show success message
+Redirect to Login page
+
+---
+
+PROTECTED ROUTES
+
+Implement a ProtectedRoute component that:
+
+Prevents access to dashboard pages if user is not logged in.
+
+If user is not authenticated:
+
+Redirect to Login page.
+
+Protected pages include:
+
+Dashboard
+Transactions
+Insights
+
+---
+
+HEADER USER MENU
+
+Enhance the header to show:
+
+User name
+User avatar placeholder
+Logout button
+
+Logout behavior:
+
+Clear user session from LocalStorage
+Redirect to Login page.
+
+---
+
+UI DESIGN
+
+Use the same design language as the dashboard.
+
+Create a modern fintech style authentication UI:
+
+Centered authentication card
+Soft shadows
+Rounded corners
+Minimalist layout
+
+Include:
+
+Dashboard logo/title
+Helpful error messages
+Smooth button hover effects
+
+---
+
+AUTH PAGES DESIGN
+
+Login Page
+
+Fields:
+
+Email
+Password
+
+Links:
+
+"Create an account"
+"Forgot password"
+
+---
+
+Signup Page
+
+Fields:
+
+Full Name
+Email
+Password
+Confirm Password
+
+Link:
+
+"Already have an account? Login"
+
+---
+
+Reset Password Page
+
+Fields:
+
+Email
+New Password
+Confirm Password
+
+Link:
+
+"Back to Login"
+
+---
+
+RESPONSIVENESS
+
+Ensure the authentication pages work well on:
+
+Desktop
+Tablet
+Mobile
+
+Center the form vertically and horizontally.
+
+---
+
+EXTRA IMPROVEMENTS
+
+Add these enhancements:
+
+Show password toggle icon
+Form validation messages
+Loading spinner when submitting
+Smooth transitions between auth pages
+
+---
+
+SESSION PERSISTENCE
+
+If a user refreshes the page and is already logged in:
+
+Automatically keep them logged in.
+
+---
+
+ROUTING STRUCTURE
+
+Use React Router with routes such as:
+
+/login
+/signup
+/reset-password
+/dashboard
+/transactions
+/insights
+
+Default route should redirect to:
+
+Login if not authenticated
+Dashboard if authenticated.
+
+---
+
+FINAL RESULT
+
+The authentication system should behave like a real SaaS login system and integrate seamlessly with the finance dashboard while remaining fully frontend-based.

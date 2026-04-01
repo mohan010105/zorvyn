@@ -1,43 +1,79 @@
-import { Switch, Route, Router as WouterRouter } from "wouter";
+import { Switch, Route, Router as WouterRouter, Redirect } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "next-themes";
 import { RoleProvider } from "@/components/role-provider";
+import { AuthProvider, useAuth } from "@/context/auth-context";
+import { ProtectedRoute } from "@/components/protected-route";
+import { Layout } from "@/components/layout";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
 import Transactions from "@/pages/transactions";
 import Insights from "@/pages/insights";
-import { Layout } from "@/components/layout";
+import Login from "@/pages/login";
+import Signup from "@/pages/signup";
+import ResetPassword from "@/pages/reset-password";
 
 const queryClient = new QueryClient();
 
-function Router() {
+function AppRoutes() {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) return null;
+
   return (
-    <Layout>
-      <Switch>
-        <Route path="/" component={Dashboard} />
-        <Route path="/transactions" component={Transactions} />
-        <Route path="/insights" component={Insights} />
-        <Route component={NotFound} />
-      </Switch>
-    </Layout>
+    <Switch>
+      <Route path="/login">
+        {isAuthenticated ? <Redirect to="/" /> : <Login />}
+      </Route>
+      <Route path="/signup">
+        {isAuthenticated ? <Redirect to="/" /> : <Signup />}
+      </Route>
+      <Route path="/reset-password">
+        {isAuthenticated ? <Redirect to="/" /> : <ResetPassword />}
+      </Route>
+
+      <Route path="/">
+        <ProtectedRoute>
+          <Layout><Dashboard /></Layout>
+        </ProtectedRoute>
+      </Route>
+      <Route path="/transactions">
+        <ProtectedRoute>
+          <Layout><Transactions /></Layout>
+        </ProtectedRoute>
+      </Route>
+      <Route path="/insights">
+        <ProtectedRoute>
+          <Layout><Insights /></Layout>
+        </ProtectedRoute>
+      </Route>
+
+      <Route>
+        <ProtectedRoute>
+          <Layout><NotFound /></Layout>
+        </ProtectedRoute>
+      </Route>
+    </Switch>
   );
 }
 
 function App() {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-      <RoleProvider>
-        <QueryClientProvider client={queryClient}>
-          <TooltipProvider>
-            <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-              <Router />
-            </WouterRouter>
-            <Toaster />
-          </TooltipProvider>
-        </QueryClientProvider>
-      </RoleProvider>
+      <AuthProvider>
+        <RoleProvider>
+          <QueryClientProvider client={queryClient}>
+            <TooltipProvider>
+              <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+                <AppRoutes />
+              </WouterRouter>
+              <Toaster />
+            </TooltipProvider>
+          </QueryClientProvider>
+        </RoleProvider>
+      </AuthProvider>
     </ThemeProvider>
   );
 }
