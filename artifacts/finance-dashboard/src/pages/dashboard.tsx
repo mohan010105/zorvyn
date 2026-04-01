@@ -1,8 +1,14 @@
+import { useMemo } from "react";
+import { Link } from "wouter";
 import { useGetFinancialSummary, useGetBalanceTrend, useGetSpendingBreakdown, useListTransactions } from "@workspace/api-client-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/lib/format";
+import { generateAllInsights } from "@/lib/ai-insights";
+import type { Transaction } from "@/lib/ai-insights";
+import { AIInsightCard } from "@/components/ai-insight-card";
 import { 
   AreaChart, 
   Area, 
@@ -16,7 +22,7 @@ import {
   Cell,
   Legend
 } from "recharts";
-import { ArrowDownIcon, ArrowUpIcon, WalletIcon, PiggyBankIcon, ClockIcon, TrendingUpIcon, TrendingDownIcon } from "lucide-react";
+import { ArrowDownIcon, ArrowUpIcon, WalletIcon, PiggyBankIcon, ClockIcon, TrendingUpIcon, TrendingDownIcon, Brain, ArrowRight, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 
 const CHART_COLORS = [
@@ -46,6 +52,12 @@ export default function Dashboard() {
   );
 
   const recent = recentTransactions?.slice(0, 7) ?? [];
+
+  const aiInsights = useMemo(
+    () => generateAllInsights((recentTransactions ?? []) as Transaction[]),
+    [recentTransactions]
+  );
+  const topInsights = aiInsights.slice(0, 2);
 
   return (
     <motion.div 
