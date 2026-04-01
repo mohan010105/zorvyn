@@ -1,0 +1,250 @@
+Build a complete **Finance Dashboard UI** using **React.js with JavaScript (Vite)** that demonstrates frontend architecture, component structure, state management, and clean UI design.
+
+The application must be fully functional and runnable using:
+
+npm install
+npm run dev
+
+The project must run without errors when exported from Replit.
+
+---
+
+PROJECT REQUIREMENTS
+
+Use the following stack:
+
+React.js (Vite)
+JavaScript (not TypeScript)
+Tailwind CSS for styling
+Recharts or Chart.js for visualizations
+React Context API for state management
+LocalStorage for persistence
+
+---
+
+PROJECT STRUCTURE
+
+Create a clean modular folder structure:
+
+src/
+components/
+Dashboard/
+SummaryCards.jsx
+BalanceTrendChart.jsx
+SpendingPieChart.jsx
+Transactions/
+TransactionTable.jsx
+TransactionFilters.jsx
+AddTransactionModal.jsx
+Insights/
+InsightsPanel.jsx
+Layout/
+Sidebar.jsx
+Header.jsx
+context/
+AppContext.jsx
+data/
+mockTransactions.js
+pages/
+Dashboard.jsx
+Transactions.jsx
+Insights.jsx
+utils/
+calculations.js
+App.jsx
+main.jsx
+
+---
+
+CORE FEATURES
+
+1. DASHBOARD OVERVIEW
+
+Display financial summary cards:
+
+Total Balance
+Total Income
+Total Expenses
+
+Include:
+
+Balance trend chart (time based visualization)
+Spending breakdown pie chart (categorical visualization)
+
+Charts should use mock transaction data.
+
+---
+
+2. TRANSACTIONS SECTION
+
+Create a transaction table with:
+
+Date
+Amount
+Category
+Type (income or expense)
+
+Include features:
+
+Search transactions
+Filter by category
+Filter by income/expense
+Sort by amount or date
+
+Transactions must be stored in global state and persisted to LocalStorage.
+
+---
+
+3. ROLE BASED UI
+
+Simulate two roles:
+
+Viewer
+Admin
+
+Use a dropdown toggle in the header to switch roles.
+
+Viewer permissions:
+Can only view transactions.
+
+Admin permissions:
+Can add transactions
+Can edit transactions
+Can delete transactions
+
+Admin actions should open a modal form.
+
+---
+
+4. INSIGHTS SECTION
+
+Automatically generate insights from the data:
+
+Highest spending category
+Monthly income vs expense comparison
+Total savings calculation
+
+Display insights as cards with icons and small charts.
+
+---
+
+5. STATE MANAGEMENT
+
+Use React Context API to manage:
+
+Transactions
+Filters
+User Role
+
+Ensure components subscribe to context cleanly.
+
+---
+
+6. RESPONSIVE UI
+
+Design a modern dashboard layout with:
+
+Sidebar navigation
+Header with role switch
+Cards and charts grid
+
+Ensure responsive behavior for:
+
+Desktop
+Tablet
+Mobile
+
+Use Tailwind CSS grid and flex utilities.
+
+---
+
+OPTIONAL ENHANCEMENTS (IMPLEMENT)
+
+Add the following improvements:
+
+Dark mode toggle
+Animated chart transitions
+CSV export for transactions
+LocalStorage persistence
+Empty state UI for no transactions
+Smooth hover animations
+
+---
+
+DESIGN EXPECTATIONS
+
+Create a professional fintech style UI:
+
+Soft shadows
+Rounded cards
+Modern fonts
+Consistent spacing
+Clean color palette (green for income, red for expenses)
+
+---
+
+MOCK DATA
+
+Generate a realistic dataset of at least 30 transactions including:
+
+Groceries
+Rent
+Salary
+Investments
+Transport
+Utilities
+Entertainment
+
+Use varying dates and amounts.
+
+---
+
+PACKAGE CONFIGURATION
+
+Ensure package.json includes:
+
+vite
+react
+react-dom
+tailwindcss
+recharts
+lucide-react
+
+Scripts must include:
+
+"dev": "vite"
+"build": "vite build"
+"preview": "vite preview"
+
+Running these commands must work without errors:
+
+npm install
+npm run dev
+
+---
+
+DOCUMENTATION
+
+Also generate a complete README.md including:
+
+Project overview
+Features list
+Technology stack
+Installation steps
+How role switching works
+Screenshots placeholders
+Deployment instructions
+
+---
+
+FINAL RESULT
+
+The final application should behave like a modern financial dashboard similar to products like Mint or YNAB with:
+
+clean UI
+working charts
+transaction management
+role-based interface
+insights generation
+
+Ensure the application runs smoothly and demonstrates strong frontend engineering practices.

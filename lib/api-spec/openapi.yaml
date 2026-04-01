@@ -1,15 +1,18 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Finance Dashboard API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: transactions
+    description: Transaction operations
+  - name: insights
+    description: Financial insights operations
 paths:
   /healthz:
     get:
@@ -24,6 +27,193 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /transactions:
+    get:
+      operationId: listTransactions
+      tags: [transactions]
+      summary: List all transactions
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [income, expense]
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+            enum: [date, amount]
+        - name: sortOrder
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+      responses:
+        "200":
+          description: List of transactions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Transaction"
+    post:
+      operationId: createTransaction
+      tags: [transactions]
+      summary: Create a new transaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTransactionBody"
+      responses:
+        "201":
+          description: Created transaction
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Transaction"
+
+  /transactions/{id}:
+    get:
+      operationId: getTransaction
+      tags: [transactions]
+      summary: Get a transaction by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Transaction
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Transaction"
+        "404":
+          description: Not found
+    put:
+      operationId: updateTransaction
+      tags: [transactions]
+      summary: Update a transaction
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTransactionBody"
+      responses:
+        "200":
+          description: Updated transaction
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Transaction"
+    delete:
+      operationId: deleteTransaction
+      tags: [transactions]
+      summary: Delete a transaction
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /insights/summary:
+    get:
+      operationId: getFinancialSummary
+      tags: [insights]
+      summary: Get financial summary (totals)
+      responses:
+        "200":
+          description: Financial summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FinancialSummary"
+
+  /insights/balance-trend:
+    get:
+      operationId: getBalanceTrend
+      tags: [insights]
+      summary: Get monthly balance trend
+      responses:
+        "200":
+          description: Monthly balance data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BalanceTrendPoint"
+
+  /insights/spending-breakdown:
+    get:
+      operationId: getSpendingBreakdown
+      tags: [insights]
+      summary: Get spending by category breakdown
+      responses:
+        "200":
+          description: Category spending breakdown
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SpendingCategory"
+
+  /insights/top-insights:
+    get:
+      operationId: getTopInsights
+      tags: [insights]
+      summary: Get auto-generated top insights
+      responses:
+        "200":
+          description: List of insights
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Insight"
+
+  /insights/monthly-comparison:
+    get:
+      operationId: getMonthlyComparison
+      tags: [insights]
+      summary: Get monthly income vs expense comparison
+      responses:
+        "200":
+          description: Monthly income vs expense data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MonthlyComparison"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +224,166 @@ components:
       required:
         - status
 
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: integer
+        date:
+          type: string
+          format: date
+        amount:
+          type: number
+        category:
+          type: string
+        type:
+          type: string
+          enum: [income, expense]
+        description:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - date
+        - amount
+        - category
+        - type
+        - description
+        - createdAt
+
+    CreateTransactionBody:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        amount:
+          type: number
+        category:
+          type: string
+        type:
+          type: string
+          enum: [income, expense]
+        description:
+          type: string
+      required:
+        - date
+        - amount
+        - category
+        - type
+        - description
+
+    UpdateTransactionBody:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        amount:
+          type: number
+        category:
+          type: string
+        type:
+          type: string
+          enum: [income, expense]
+        description:
+          type: string
+
+    FinancialSummary:
+      type: object
+      properties:
+        totalBalance:
+          type: number
+        totalIncome:
+          type: number
+        totalExpenses:
+          type: number
+        totalSavings:
+          type: number
+        savingsRate:
+          type: number
+        transactionCount:
+          type: integer
+      required:
+        - totalBalance
+        - totalIncome
+        - totalExpenses
+        - totalSavings
+        - savingsRate
+        - transactionCount
+
+    BalanceTrendPoint:
+      type: object
+      properties:
+        month:
+          type: string
+        income:
+          type: number
+        expenses:
+          type: number
+        balance:
+          type: number
+      required:
+        - month
+        - income
+        - expenses
+        - balance
+
+    SpendingCategory:
+      type: object
+      properties:
+        category:
+          type: string
+        amount:
+          type: number
+        percentage:
+          type: number
+        transactionCount:
+          type: integer
+      required:
+        - category
+        - amount
+        - percentage
+        - transactionCount
+
+    Insight:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+          enum: [info, warning, success, danger]
+        value:
+          type: string
+        category:
+          type: string
+      required:
+        - id
+        - title
+        - description
+        - type
+        - value
+
+    MonthlyComparison:
+      type: object
+      properties:
+        month:
+          type: string
+        income:
+          type: number
+        expenses:
+          type: number
+        savings:
+          type: number
+      required:
+        - month
+        - income
+        - expenses
+        - savings
