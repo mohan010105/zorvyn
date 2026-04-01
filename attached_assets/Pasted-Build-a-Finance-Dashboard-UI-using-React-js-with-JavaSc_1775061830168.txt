@@ -1,0 +1,290 @@
+Build a **Finance Dashboard UI** using **React.js with JavaScript (Vite)** that demonstrates strong frontend architecture, clean UI design, real-time state updates, and interactive data visualization.
+
+The project must run correctly using:
+
+npm install
+npm run dev
+
+The application must run smoothly when exported from Replit.
+
+---
+
+TECH STACK
+
+Use the following technologies:
+
+React.js with JavaScript (Vite)
+Tailwind CSS for styling
+Recharts for data visualization
+React Context API for state management
+LocalStorage for persistence
+Lucide-react icons
+
+---
+
+PROJECT STRUCTURE
+
+Organize the project with a clean and scalable structure:
+
+src/
+components/
+Dashboard/
+SummaryCards.jsx
+BalanceTrendChart.jsx
+SpendingPieChart.jsx
+RecentActivity.jsx
+
+Transactions/
+TransactionTable.jsx
+TransactionFilters.jsx
+AddTransactionModal.jsx
+
+Insights/
+InsightsPanel.jsx
+
+Layout/
+Sidebar.jsx
+Header.jsx
+
+context/
+AppContext.jsx
+
+data/
+initialTransactions.js
+
+pages/
+Dashboard.jsx
+Transactions.jsx
+Insights.jsx
+
+utils/
+financeCalculations.js
+
+App.jsx
+main.jsx
+
+---
+
+DATA APPROACH (IMPORTANT)
+
+Do NOT include large demo datasets.
+
+Only include **4–5 initial sample transactions** such as:
+
+Salary
+Groceries
+Rent
+Transport
+Entertainment
+
+After that, the application must behave like a **real financial tracker** where users can:
+
+Add new transactions
+Edit transactions
+Delete transactions
+
+All charts, insights, summaries, and tables must **update in real time** when data changes.
+
+Transactions must be saved to **LocalStorage** so the data remains after refresh.
+
+---
+
+DASHBOARD OVERVIEW
+
+Create a dashboard page containing:
+
+Summary Cards:
+Total Balance
+Total Income
+Total Expenses
+
+Charts:
+
+Balance Trend Chart (time based)
+Spending Breakdown Pie Chart (category based)
+
+Charts must dynamically update whenever transactions change.
+
+---
+
+TRANSACTIONS SECTION
+
+Create a transaction table displaying:
+
+Date
+Amount
+Category
+Type (Income or Expense)
+
+Features required:
+
+Search transactions
+Filter by category
+Filter by type
+Sort by date
+Sort by amount
+
+Admin users can:
+
+Add transactions
+Edit transactions
+Delete transactions
+
+Use a modal form for transaction management.
+
+---
+
+ROLE BASED UI
+
+Simulate two roles:
+
+Viewer
+Admin
+
+Add a dropdown in the header to switch roles.
+
+Viewer role:
+Can only view dashboard and transactions.
+
+Admin role:
+Can add, edit, and delete transactions.
+
+UI should update instantly when role changes.
+
+---
+
+INSIGHTS SECTION
+
+Automatically generate financial insights such as:
+
+Highest spending category
+Monthly income vs expenses
+Total savings
+Recent spending patterns
+
+Display insights using cards with small charts or icons.
+
+---
+
+REAL TIME UI BEHAVIOR
+
+Whenever a transaction is:
+
+Added
+Edited
+Deleted
+
+The following must update automatically:
+
+Summary cards
+Charts
+Insights
+Transaction table
+Recent activity
+
+---
+
+EXTRA FEATURES (IMPORTANT)
+
+Include these enhancements to improve the application:
+
+Floating "Quick Add Transaction" button
+Recent Activity panel on dashboard
+Dark Mode toggle
+Smooth animations for charts
+CSV export for transactions
+Graceful empty state UI when no transactions exist
+
+---
+
+RESPONSIVE DESIGN
+
+Create a professional fintech dashboard layout including:
+
+Sidebar navigation
+Top header with role switch and dark mode
+Responsive card grid
+Responsive charts
+
+Ensure usability across:
+
+Desktop
+Tablet
+Mobile
+
+---
+
+UI DESIGN STYLE
+
+Use a modern fintech dashboard design:
+
+Soft shadows
+Rounded cards
+Consistent spacing
+Professional typography
+Green for income
+Red for expenses
+
+---
+
+STATE MANAGEMENT
+
+Use React Context API to manage:
+
+Transactions
+Filters
+User Role
+Dark Mode
+
+Keep state logic centralized and clean.
+
+---
+
+PACKAGE CONFIGURATION
+
+Ensure package.json includes:
+
+vite
+react
+react-dom
+tailwindcss
+recharts
+lucide-react
+
+Scripts must include:
+
+"dev": "vite"
+"build": "vite build"
+"preview": "vite preview"
+
+Running the following must work with no errors:
+
+npm install
+npm run dev
+
+---
+
+DOCUMENTATION
+
+Generate a professional README.md including:
+
+Project overview
+Features implemented
+Technology stack
+How role switching works
+How real-time updates work
+Installation steps
+Deployment instructions
+
+---
+
+FINAL GOAL
+
+The final result should resemble a **modern financial dashboard application** similar to Mint or other fintech tools, with:
+
+clean UI
+real-time data updates
+interactive charts
+transaction management
+role-based interface
+dynamic insights
