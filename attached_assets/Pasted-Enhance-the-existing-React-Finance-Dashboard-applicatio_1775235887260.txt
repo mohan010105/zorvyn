@@ -1,0 +1,199 @@
+Enhance the existing React Finance Dashboard application by implementing a **Smart Budget Planner and Overspending Alert system**.
+
+This feature should help users set monthly budgets for different spending categories and monitor their spending progress in real time.
+
+Do not remove or break any existing features such as:
+
+Dashboard
+Transactions
+Insights
+AI financial insights
+Authentication
+Charts
+Role-based UI
+
+---
+
+FEATURE NAME
+
+Smart Budget Planner
+
+---
+
+CREATE NEW COMPONENTS
+
+Create the following components:
+
+src/components/Budget/BudgetPlanner.jsx
+src/components/Budget/BudgetCard.jsx
+src/components/Budget/BudgetProgress.jsx
+
+---
+
+CREATE PAGE
+
+Create a new page:
+
+src/pages/Budget.jsx
+
+Add this page to the sidebar navigation.
+
+---
+
+BUDGET FUNCTIONALITY
+
+Allow users to set a **monthly budget for each spending category**.
+
+Example categories:
+
+Food
+Transport
+Entertainment
+Utilities
+Shopping
+
+Each category should include:
+
+Budget amount
+Total spent
+Remaining budget
+Progress bar.
+
+---
+
+ADD BUDGET FORM
+
+Create a form where users can:
+
+Select category
+Enter monthly budget amount
+Save budget.
+
+Budgets should be stored in **LocalStorage**.
+
+---
+
+BUDGET CALCULATIONS
+
+Use existing transaction data to calculate:
+
+Total spent per category
+Remaining budget
+
+Formula:
+
+Remaining Budget = Budget Limit − Category Expenses
+
+---
+
+PROGRESS VISUALIZATION
+
+Display progress bars for each budget.
+
+Example:
+
+Food Budget
+
+Budget Limit: ₹8000
+Spent: ₹6200
+Remaining: ₹1800
+
+Progress bar should fill according to spending percentage.
+
+---
+
+OVESPENDING ALERT SYSTEM
+
+Add automatic alerts when spending crosses thresholds.
+
+Alert levels:
+
+70% spent → Warning
+90% spent → Danger
+100% spent → Budget exceeded.
+
+Example messages:
+
+"Warning: You have used 75% of your Food budget."
+
+"Alert: You exceeded your Entertainment budget."
+
+---
+
+DASHBOARD INTEGRATION
+
+Add a new dashboard section:
+
+"Budget Overview"
+
+Display:
+
+Top 3 categories with highest spending progress.
+
+---
+
+VISUAL DESIGN
+
+Use modern fintech card UI:
+
+Rounded cards
+Soft shadows
+Colored progress bars
+
+Colors:
+
+Green → Safe spending
+Yellow → Approaching limit
+Red → Exceeded budget
+
+---
+
+REAL TIME UPDATES
+
+Whenever a transaction is:
+
+Added
+Edited
+Deleted
+
+Budget progress and alerts must update automatically.
+
+---
+
+INSIGHTS INTEGRATION
+
+Connect with AI Insights to generate recommendations such as:
+
+"Reducing Entertainment spending by 15% could save ₹2000 this month."
+
+---
+
+EMPTY STATE
+
+If no budgets exist:
+
+Show message:
+
+"No budgets set yet. Create a budget to start tracking spending."
+
+---
+
+RESPONSIVE DESIGN
+
+Ensure budget planner works on:
+
+Desktop
+Tablet
+Mobile.
+
+---
+
+FINAL RESULT
+
+The dashboard should now behave like a real personal finance application where users can:
+
+Track transactions
+Analyze spending
+Generate AI insights
+Plan monthly budgets
+Receive overspending alerts.

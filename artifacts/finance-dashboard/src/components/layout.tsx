@@ -33,7 +33,8 @@ import {
   Eye,
   LogOut,
   User,
-  ChevronDown
+  ChevronDown,
+  PiggyBank
 } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -61,11 +62,22 @@ export function Layout({ children }: { children: React.ReactNode }) {
     { href: "/", label: "Dashboard", icon: LayoutDashboard },
     { href: "/transactions", label: "Transactions", icon: ArrowRightLeft },
     { href: "/insights", label: "Insights", icon: LineChart },
+    { href: "/budget", label: "Budget", icon: PiggyBank },
   ];
 
-  const pageTitle = location === "/" 
-    ? "Dashboard" 
-    : location.substring(1).charAt(0).toUpperCase() + location.substring(2);
+  const pageTitleMap: Record<string, string> = {
+    "/": "Dashboard",
+    "/transactions": "Transactions",
+    "/insights": "Insights",
+    "/budget": "Budget Planner",
+  };
+  const pageTitle = pageTitleMap[location] ?? (location.substring(1).charAt(0).toUpperCase() + location.substring(2));
+  const pageSubtitleMap: Record<string, string> = {
+    "/": "Financial overview",
+    "/transactions": "Manage your records",
+    "/insights": "Smart financial analysis",
+    "/budget": "Monthly spending limits",
+  };
 
   const handleQuickAddSuccess = () => {
     queryClient.invalidateQueries();
@@ -160,7 +172,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <div className="hidden sm:block">
               <h1 className="text-lg font-bold leading-none">{pageTitle}</h1>
               <p className="text-xs text-muted-foreground mt-0.5">
-                {location === "/" ? "Financial overview" : location === "/transactions" ? "Manage your records" : "Smart financial analysis"}
+                {pageSubtitleMap[location] ?? ""}
               </p>
             </div>
           </div>

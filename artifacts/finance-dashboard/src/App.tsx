@@ -5,12 +5,14 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "next-themes";
 import { RoleProvider } from "@/components/role-provider";
 import { AuthProvider, useAuth } from "@/context/auth-context";
+import { BudgetProvider } from "@/context/budget-context";
 import { ProtectedRoute } from "@/components/protected-route";
 import { Layout } from "@/components/layout";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
 import Transactions from "@/pages/transactions";
 import Insights from "@/pages/insights";
+import BudgetPage from "@/pages/budget";
 import Login from "@/pages/login";
 import Signup from "@/pages/signup";
 import ResetPassword from "@/pages/reset-password";
@@ -49,6 +51,11 @@ function AppRoutes() {
           <Layout><Insights /></Layout>
         </ProtectedRoute>
       </Route>
+      <Route path="/budget">
+        <ProtectedRoute>
+          <Layout><BudgetPage /></Layout>
+        </ProtectedRoute>
+      </Route>
 
       <Route>
         <ProtectedRoute>
@@ -64,6 +71,7 @@ function App() {
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
       <AuthProvider>
         <RoleProvider>
+          <BudgetProvider>
           <QueryClientProvider client={queryClient}>
             <TooltipProvider>
               <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
@@ -72,6 +80,7 @@ function App() {
               <Toaster />
             </TooltipProvider>
           </QueryClientProvider>
+          </BudgetProvider>
         </RoleProvider>
       </AuthProvider>
     </ThemeProvider>

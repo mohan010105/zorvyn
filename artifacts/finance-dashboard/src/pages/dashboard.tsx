@@ -1,6 +1,8 @@
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import { Link } from "wouter";
 import { useGetFinancialSummary, useGetBalanceTrend, useGetSpendingBreakdown, useListTransactions } from "@workspace/api-client-react";
+import { useBudget } from "@/context/budget-context";
+import { alertStyle, getAlertMessage } from "@/lib/budget";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -22,7 +24,7 @@ import {
   Cell,
   Legend
 } from "recharts";
-import { ArrowDownIcon, ArrowUpIcon, WalletIcon, PiggyBankIcon, ClockIcon, TrendingUpIcon, TrendingDownIcon, Brain, ArrowRight, Sparkles } from "lucide-react";
+import { ArrowDownIcon, ArrowUpIcon, WalletIcon, PiggyBankIcon, ClockIcon, TrendingUpIcon, TrendingDownIcon, Brain, ArrowRight, Sparkles, PiggyBank, AlertTriangle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const CHART_COLORS = [
@@ -58,6 +60,19 @@ export default function Dashboard() {
     [recentTransactions]
   );
   const topInsights = aiInsights.slice(0, 2);
+
+  // Keep budget spending in sync with dashboard transactions
+  const { statuses: budgetStatuses, refreshWithTransactions } = useBudget();
+  useEffect(() => {
+    if (recentTransactions) {
+      refreshWithTransactions(recentTransactions as Transaction[]);
+    }
+  }, [recentTransactions, refreshWithTransactions]);
+
+  // Top 3 budget categories by spending percentage
+  const topBudgets = [...budgetStatuses]
+    .sort((a, b) => b.percentage - a.percentage)
+    .slice(0, 3);
 
   return (
     <motion.div 
@@ -272,6 +287,74 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </motion.div>
+
+      {/* Budget Overview */}
+      {topBudgets.length > 0 && (
+        <motion.div variants={itemVariants}>
+          <Card className="glass-card border-0 overflow-hidden">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="h-7 w-7 rounded-lg icon-bg-green flex items-center justify-center">
+                    <PiggyBank className="h-3.5 w-3.5 text-emerald-600" />
+                  </div>
+                  <CardTitle className="text-base font-semibold">Budget Overview</CardTitle>
+                  <Badge variant="outline" className="text-[10px] font-semibold bg-emerald-500/8 border-emerald-500/20 text-emerald-600 dark:text-emerald-400 ml-1">
+                    This month
+                  </Badge>
+                </div>
+                <Link href="/budget">
+                  <Button variant="ghost" size="sm" className="h-7 rounded-lg text-xs text-muted-foreground hover:text-primary gap-1 px-2">
+                    Manage
+                    <ArrowRight className="h-3 w-3" />
+                  </Button>
+                </Link>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-0 pb-4 space-y-3">
+              {topBudgets.map((status, i) => {
+                const styles = alertStyle(status.alertLevel);
+                const pct = Math.min(100, status.percentage);
+                const alertMsg = getAlertMessage(status);
+                return (
+                  <div key={status.budget.id} className={`rounded-xl border ${styles.border} overflow-hidden`}>
+                    {alertMsg && (
+                      <div className={`flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-medium ${styles.bg} ${styles.text} border-b ${styles.border}`}>
+                        <AlertTriangle className="h-3 w-3 flex-shrink-0" />
+                        {alertMsg}
+                      </div>
+                    )}
+                    <div className="px-3 py-2.5">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-semibold">{status.budget.category}</span>
+                        <span className={`text-xs font-bold ${styles.text}`}>
+                          {formatCurrency(status.spent)} / {formatCurrency(status.budget.limit)}
+                        </span>
+                      </div>
+                      <div className="h-1.5 w-full bg-muted/60 rounded-full overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${pct}%` }}
+                          transition={{ duration: 0.6, delay: i * 0.08, ease: "easeOut" }}
+                          className={`h-full rounded-full ${styles.bar}`}
+                        />
+                      </div>
+                      <div className="flex justify-between mt-1.5">
+                        <span className="text-[10px] text-muted-foreground">{Math.round(status.percentage)}% used</span>
+                        <span className="text-[10px] text-muted-foreground">
+                          {status.alertLevel === "exceeded"
+                            ? `${formatCurrency(status.spent - status.budget.limit)} over`
+                            : `${formatCurrency(status.remaining)} left`}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
 
       {/* Recent Activity */}
       <motion.div variants={itemVariants}>
