@@ -19,6 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { TransactionModal } from "@/components/transaction-modal";
+import { FinanceAssistant } from "@/components/finance-assistant";
 import { useQueryClient } from "@tanstack/react-query";
 import { 
   LayoutDashboard, 
@@ -256,7 +257,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </main>
       </div>
 
-      {/* Floating Quick Add Button (Admin only) */}
+      {/* AI Financial Assistant (always visible) */}
+      <FinanceAssistant />
+
+      {/* Floating Quick Add Button (Admin only) — positioned above the assistant button */}
       <AnimatePresence>
         {role === "Admin" && (
           <motion.div
@@ -264,7 +268,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0, opacity: 0, y: 20 }}
             transition={{ type: "spring", stiffness: 350, damping: 25 }}
-            className="fixed bottom-6 right-6 z-50"
+            className="fixed bottom-24 right-6 z-50"
           >
             <motion.button
               whileHover={{ scale: 1.05 }}

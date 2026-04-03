@@ -1,0 +1,190 @@
+Enhance the existing React Finance Dashboard by implementing an **AI Financial Assistant Chatbot** that can answer questions about the user's financial data.
+
+This chatbot should analyze transaction data stored in the application and provide intelligent responses.
+
+The feature must work completely on the frontend and should not require any external AI API.
+
+Do not remove or break any existing features such as dashboard, transactions, insights, authentication, or charts.
+
+---
+
+FEATURE NAME
+
+AI Financial Assistant
+
+---
+
+CREATE NEW COMPONENT
+
+src/components/Assistant/FinanceAssistant.jsx
+
+---
+
+CHATBOT UI
+
+Create a floating chat assistant similar to modern SaaS dashboards.
+
+Include:
+
+Floating chat icon button at bottom right
+Expandable chat window
+Message input field
+Scrollable conversation area
+
+---
+
+CHATBOT CAPABILITIES
+
+The assistant should respond to common financial questions.
+
+Examples:
+
+1. Highest spending category
+
+User Question:
+"Where did I spend the most money?"
+
+Response:
+Analyze transactions and determine the category with highest expense.
+
+---
+
+2. Monthly savings
+
+User Question:
+"How much did I save this month?"
+
+Response:
+Savings = Total Income − Total Expenses.
+
+---
+
+3. Expense summary
+
+User Question:
+"What are my total expenses?"
+
+Response:
+Calculate total expense transactions.
+
+---
+
+4. Spending breakdown
+
+User Question:
+"Show my spending categories."
+
+Response:
+List top spending categories.
+
+---
+
+5. Expense prediction
+
+User Question:
+"Predict my next month expenses."
+
+Response:
+Use simple prediction formula:
+
+Average of last 3 months expenses
+OR
+Current month expense × 1.05.
+
+---
+
+CHAT PROCESSING
+
+Implement a simple NLP-like command parser.
+
+Detect keywords such as:
+
+"spend"
+"expenses"
+"savings"
+"prediction"
+"category"
+
+Use these keywords to trigger the correct calculation functions.
+
+---
+
+UTILITY FUNCTIONS
+
+Create helper functions inside:
+
+src/utils/assistantLogic.js
+
+Functions include:
+
+calculateTotalIncome()
+calculateTotalExpenses()
+calculateSavings()
+getHighestSpendingCategory()
+predictNextMonthExpenses()
+
+---
+
+REAL TIME DATA
+
+The assistant must always use the latest transaction data from the application state.
+
+If a new transaction is added, edited, or deleted, the chatbot answers should reflect the updated data.
+
+---
+
+CHAT EXPERIENCE
+
+Add:
+
+User messages on right side
+Assistant messages on left side
+Timestamp for each message
+
+Include a welcome message:
+
+"Hi! I'm your financial assistant. Ask me about your spending, savings, or predictions."
+
+---
+
+SUGGESTED QUESTIONS
+
+Add clickable suggestions inside the chat:
+
+"Where did I spend the most money?"
+"How much did I save this month?"
+"Show my top spending category."
+"Predict next month expenses."
+
+---
+
+EMPTY DATA HANDLING
+
+If there are not enough transactions, respond with:
+
+"I need more transaction data to analyze your finances."
+
+---
+
+VISUAL DESIGN
+
+Match the existing fintech dashboard style.
+
+Use:
+
+Rounded chat window
+Soft shadows
+Smooth open animation
+Lucide icons
+
+---
+
+DASHBOARD INTEGRATION
+
+The assistant should be accessible from every page through the floating button.
+
+---
+
+FINAL RESULT
+
+The application should now include a smart AI-style assistant that can answer financial questions, analyze transaction data, and provide useful insights, making the dashboard feel like an intelligent personal finance platform.
