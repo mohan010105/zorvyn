@@ -5,8 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite --config vite.config.ts --host 0.0.0.0",
+    "dev:standalone": "vite --config vite.config.standalone.ts --host 0.0.0.0",
     "build": "vite build --config vite.config.ts",
+    "build:standalone": "vite build --config vite.config.standalone.ts",
     "serve": "vite preview --config vite.config.ts --host 0.0.0.0",
+    "preview:standalone": "vite preview --config vite.config.standalone.ts --host 0.0.0.0",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {

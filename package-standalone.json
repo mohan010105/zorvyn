@@ -1,0 +1,23 @@
+{
+  "name": "coffer-finance-dashboard",
+  "version": "1.0.0",
+  "description": "Coffer — AI-powered Finance Dashboard built with React, Vite, Express & PostgreSQL",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "artifacts/finance-dashboard",
+    "artifacts/api-server",
+    "lib/api-client-react",
+    "lib/db"
+  ],
+  "scripts": {
+    "dev": "concurrently --names \"API,WEB\" --prefix-colors \"blue,green\" \"npm run dev:api\" \"npm run dev:web\"",
+    "dev:api": "npm --prefix artifacts/api-server run dev",
+    "dev:web": "npm --prefix artifacts/finance-dashboard run dev:standalone",
+    "install:all": "npm install",
+    "build": "npm --prefix artifacts/api-server run build && npm --prefix artifacts/finance-dashboard run build:standalone"
+  },
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

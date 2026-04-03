@@ -226,6 +226,53 @@ export default function Dashboard() {
         </Card>
       </motion.div>
 
+      {/* AI Financial Insights mini-section */}
+      <motion.div variants={itemVariants}>
+        <Card className="glass-card border-0 overflow-hidden">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="h-7 w-7 rounded-lg icon-bg-purple flex items-center justify-center">
+                  <Brain className="h-3.5 w-3.5 text-violet-600" />
+                </div>
+                <CardTitle className="text-base font-semibold">AI Financial Insights</CardTitle>
+                <Badge variant="outline" className="text-[10px] font-semibold bg-violet-500/8 border-violet-500/20 text-violet-600 dark:text-violet-400 ml-1">
+                  <Sparkles className="h-2.5 w-2.5 mr-1" />
+                  Smart
+                </Badge>
+              </div>
+              <Link href="/insights">
+                <Button variant="ghost" size="sm" className="h-7 rounded-lg text-xs text-muted-foreground hover:text-primary gap-1 px-2">
+                  View all
+                  <ArrowRight className="h-3 w-3" />
+                </Button>
+              </Link>
+            </div>
+          </CardHeader>
+          <CardContent className="pt-0 pb-4">
+            {loadingRecent ? (
+              <div className="space-y-2">
+                <Skeleton className="h-14 w-full rounded-xl" />
+                <Skeleton className="h-14 w-full rounded-xl" />
+              </div>
+            ) : topInsights.length === 0 ? (
+              <div className="flex items-center gap-3 py-6 text-center justify-center">
+                <div className="flex flex-col items-center gap-2">
+                  <Brain className="h-8 w-8 text-muted-foreground/40" />
+                  <p className="text-xs text-muted-foreground">Add more transactions to unlock AI insights.</p>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {topInsights.map((insight, i) => (
+                  <AIInsightCard key={insight.id} insight={insight} index={i} compact />
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </motion.div>
+
       {/* Recent Activity */}
       <motion.div variants={itemVariants}>
         <Card className="glass-card border-0 overflow-hidden">
