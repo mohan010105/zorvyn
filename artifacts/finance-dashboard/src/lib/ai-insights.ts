@@ -19,13 +19,24 @@ export interface AIInsight {
   detail?: string;
 }
 
-function parseAmount(amount: string | number): number {
-  return typeof amount === "number" ? amount : parseFloat(amount) || 0;
+export function parseAmount(amount: string | number): number {
+  if (typeof amount === "number") return amount;
+  if (!amount) return 0;
+  return parseFloat(String(amount).replace(/[^\d.-]/g, "")) || 0;
 }
 
 export function getMonthKey(date: string | Date): string {
-  const d = typeof date === "string" ? date : date.toISOString();
-  return d.slice(0, 7);
+  if (!date) return new Date().toISOString().slice(0, 7);
+  
+  try {
+    if (typeof date === "string") return date.slice(0, 7);
+    if (date instanceof Date) return date.toISOString().slice(0, 7);
+    if (typeof (date as any).toISOString === "function") return (date as any).toISOString().slice(0, 7);
+  } catch (e) {
+    console.error("[getMonthKey] Error parsing date:", date, e);
+  }
+  
+  return new Date().toISOString().slice(0, 7);
 }
 
 function getMonthLabel(monthKey: string): string {

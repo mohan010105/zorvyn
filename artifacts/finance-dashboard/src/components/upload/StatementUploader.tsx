@@ -73,7 +73,10 @@ const StatementUploader: React.FC<Props> = ({ onUploadSuccess }) => {
         const category = categoryInput || categorizeDescription(description);
 
         return {
-          date: new Date(date).toISOString().split('T')[0],
+          date: (() => {
+            const d = new Date(date);
+            return isNaN(d.getTime()) ? new Date().toISOString().split('T')[0] : d.toISOString().split('T')[0];
+          })(),
           description,
           amount: absAmount,
           category,

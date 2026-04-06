@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/lib/format";
-import { generateAllInsights, getTrendData, calculateCategorySpending } from "@/lib/ai-insights";
+import { generateAllInsights, getTrendData, calculateCategorySpending, parseAmount } from "@/lib/ai-insights";
 import type { Transaction } from "@/lib/ai-insights";
 import { AIInsightCard } from "@/components/ai-insight-card";
 import { 
@@ -49,11 +49,12 @@ export default function Dashboard() {
   const { allTransactions, isLoading } = useTransactions();
   
   const summary = useMemo(() => {
+    console.log("[Dashboard] Computing summary for transactions:", allTransactions.length);
     let income = 0;
     let expenses = 0;
     allTransactions.forEach(t => {
-      const amt = typeof t.amount === 'number' ? t.amount : parseFloat(t.amount);
-      if (t.type === 'income') income += amt;
+      const amt = parseAmount(t.amount);
+      if (t.type === "income") income += amt;
       else expenses += amt;
     });
     const balance = income - expenses;

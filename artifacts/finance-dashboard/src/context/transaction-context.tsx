@@ -29,7 +29,11 @@ export function TransactionProvider({ children }: { children: ReactNode }) {
   const allTransactions = useMemo(() => {
     // Combine and sort by date descending
     const combined = [...remoteTransactions, ...localTransactions];
-    return combined.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    return combined.sort((a, b) => {
+      const timeA = new Date(a.date).getTime() || 0;
+      const timeB = new Date(b.date).getTime() || 0;
+      return timeB - timeA;
+    });
   }, [remoteTransactions, localTransactions]);
 
   const addUploadedTransactions = useCallback((txs: Omit<Transaction, 'id'>[]) => {
