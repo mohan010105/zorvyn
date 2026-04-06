@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useMemo, useCallback } from "react";
+import { createContext, useContext, useState, useEffect, useMemo, useCallback, ReactNode } from "react";
 import { useListTransactions } from "@workspace/api-client-react";
 import { Transaction } from "@/lib/ai-insights";
 import { loadLocalTransactions, addLocalTransactions as saveToLocal, clearLocalTransactions as clearFromLocal } from "@/lib/transactions-storage";
@@ -15,7 +15,7 @@ interface TransactionContextValue {
 
 const TransactionContext = createContext<TransactionContextValue | null>(null);
 
-export function TransactionProvider({ children }: { children: React.ReactNode }) {
+export function TransactionProvider({ children }: { children: ReactNode }) {
   const [localTransactions, setLocalTransactions] = useState<Transaction[]>(() => loadLocalTransactions());
   
   // Use the standard hook from the API client

@@ -239,6 +239,7 @@ function BudgetForm({
 }
 
 export default function Budget() {
+  console.log("[Budget] Rendering...");
   const { allTransactions, isLoading: loadingTransactions } = useTransactions();
   const { budgets, statuses, currentMonth, addOrUpdateBudget, removeBudget, refreshWithTransactions } =
     useBudget();

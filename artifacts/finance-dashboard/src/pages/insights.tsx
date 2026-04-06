@@ -33,6 +33,7 @@ const itemVariants = {
 };
 
 export default function Insights() {
+  console.log("[Insights] Rendering...");
   const { allTransactions: transactions, isLoading } = useTransactions();
 
   const insights = useMemo(() => generateAllInsights(transactions), [transactions]);

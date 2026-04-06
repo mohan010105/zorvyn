@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Search, Plus, Trash2, Edit, Download, WalletIcon, TrendingUpIcon, TrendingDownIcon, FilterIcon } from "lucide-react";
+import { Search, Plus, Trash2, Edit, Download, Wallet, TrendingUp, TrendingDown, Filter } from "lucide-react";
 import { TransactionModal } from "@/components/transaction-modal";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -16,6 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Transactions() {
+  console.log("[Transactions] Rendering...");
   const { isAdmin } = useRole();
   const { toast } = useToast();
   const [search, setSearch] = useState("");
@@ -144,7 +145,7 @@ export default function Transactions() {
               />
             </div>
             <div className="flex items-center gap-2 w-full sm:w-auto">
-              <FilterIcon className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+              <Filter className="h-4 w-4 text-muted-foreground flex-shrink-0" />
               <Select value={typeFilter} onValueChange={setTypeFilter}>
                 <SelectTrigger className="w-full sm:w-[140px] bg-background/60 border-border/50 rounded-xl h-9 text-sm font-medium">
                   <SelectValue placeholder="Filter type" />
@@ -191,7 +192,7 @@ export default function Transactions() {
                   <TableCell colSpan={isAdmin ? 6 : 5}>
                     <div className="flex flex-col items-center justify-center py-16 text-center">
                       <div className="h-14 w-14 rounded-2xl bg-muted/60 flex items-center justify-center mb-4">
-                        <WalletIcon className="h-7 w-7 text-muted-foreground" />
+                        <Wallet className="h-7 w-7 text-muted-foreground" />
                       </div>
                       <p className="text-sm font-medium text-foreground mb-1">No transactions found</p>
                       <p className="text-xs text-muted-foreground max-w-[220px]">
@@ -221,8 +222,8 @@ export default function Transactions() {
                             t.type === 'income' ? 'icon-bg-green' : 'icon-bg-red'
                           }`}>
                             {t.type === 'income'
-                              ? <TrendingUpIcon className="h-3.5 w-3.5 text-emerald-600" />
-                              : <TrendingDownIcon className="h-3.5 w-3.5 text-red-500" />
+                              ? <TrendingUp className="h-3.5 w-3.5 text-emerald-600" />
+                              : <TrendingDown className="h-3.5 w-3.5 text-red-500" />
                             }
                           </div>
                           <span className="text-sm font-medium text-foreground truncate max-w-[200px]">{t.description}</span>

@@ -24,7 +24,7 @@ import {
   Cell,
   Legend
 } from "recharts";
-import { ArrowDownIcon, ArrowUpIcon, WalletIcon, PiggyBankIcon, ClockIcon, TrendingUpIcon, TrendingDownIcon, Brain, ArrowRight, Sparkles, PiggyBank, AlertTriangle } from "lucide-react";
+import { ArrowDown, ArrowUp, Wallet, Clock, TrendingUp, TrendingDown, Brain, ArrowRight, Sparkles, PiggyBank, AlertTriangle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const CHART_COLORS = [
@@ -45,6 +45,7 @@ const itemVariants = {
 };
 
 export default function Dashboard() {
+  console.log("[Dashboard] Rendering...");
   const { allTransactions, isLoading } = useTransactions();
   
   const summary = useMemo(() => {
@@ -109,7 +110,7 @@ export default function Dashboard() {
           title="Total Balance"
           value={summary.totalBalance}
           loading={isLoading}
-          icon={WalletIcon}
+          icon={Wallet}
           accent="blue"
           trend={summary.totalBalance > 0 ? "up" : "neutral"}
         />
@@ -117,7 +118,7 @@ export default function Dashboard() {
           title="Total Income"
           value={summary.totalIncome}
           loading={isLoading}
-          icon={ArrowUpIcon}
+          icon={ArrowUp}
           valueColor="text-emerald-500"
           accent="green"
           trend="up"
@@ -126,7 +127,7 @@ export default function Dashboard() {
           title="Total Expenses"
           value={summary.totalExpenses}
           loading={isLoading}
-          icon={ArrowDownIcon}
+          icon={ArrowDown}
           valueColor="text-red-500"
           accent="red"
           trend="down"
@@ -135,7 +136,7 @@ export default function Dashboard() {
           title="Savings Rate"
           value={summary.savingsRate !== undefined ? `${summary.savingsRate.toFixed(1)}%` : undefined}
           loading={isLoading}
-          icon={PiggyBankIcon}
+          icon={PiggyBank}
           isCurrency={false}
           accent="purple"
           trend={summary.savingsRate > 20 ? "up" : "neutral"}
@@ -378,7 +379,7 @@ export default function Dashboard() {
         <Card className="glass-card border-0 overflow-hidden">
           <CardHeader className="flex flex-row items-center justify-between pb-3">
             <div className="flex items-center gap-2">
-              <ClockIcon className="h-4 w-4 text-muted-foreground" />
+              <Clock className="h-4 w-4 text-muted-foreground" />
               <CardTitle className="text-base font-semibold">Recent Activity</CardTitle>
             </div>
             {recent.length > 0 && (
@@ -402,7 +403,7 @@ export default function Dashboard() {
             ) : recent.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-center">
                 <div className="h-14 w-14 rounded-2xl bg-muted/60 flex items-center justify-center mb-4">
-                  <WalletIcon className="h-7 w-7 text-muted-foreground" />
+                  <Wallet className="h-7 w-7 text-muted-foreground" />
                 </div>
                 <p className="text-sm font-medium text-foreground mb-1">No transactions yet</p>
                 <p className="text-xs text-muted-foreground max-w-[220px]">Add your first transaction to start tracking your finances.</p>
@@ -422,8 +423,8 @@ export default function Dashboard() {
                         tx.type === 'income' ? 'icon-bg-green' : 'icon-bg-red'
                       }`}>
                         {tx.type === 'income'
-                          ? <TrendingUpIcon className="h-4 w-4 text-emerald-600" />
-                          : <TrendingDownIcon className="h-4 w-4 text-red-500" />
+                          ? <TrendingUp className="h-4 w-4 text-emerald-600" />
+                          : <TrendingDown className="h-4 w-4 text-red-500" />
                         }
                       </div>
                       <div className="min-w-0">
@@ -456,7 +457,7 @@ function EmptyChart({ message }: { message: string }) {
   return (
     <div className="flex flex-col items-center justify-center h-full text-center gap-2">
       <div className="h-10 w-10 rounded-xl bg-muted/60 flex items-center justify-center">
-        <TrendingUpIcon className="h-5 w-5 text-muted-foreground" />
+        <TrendingUp className="h-5 w-5 text-muted-foreground" />
       </div>
       <p className="text-xs text-muted-foreground max-w-[160px]">{message}</p>
     </div>
@@ -504,8 +505,8 @@ function SummaryCard({
               {trend !== "neutral" && (
                 <div className="flex items-center gap-1">
                   {trend === "up" 
-                    ? <TrendingUpIcon className="h-3 w-3 text-emerald-500" />
-                    : <TrendingDownIcon className="h-3 w-3 text-red-400" />
+                    ? <TrendingUp className="h-3 w-3 text-emerald-500" />
+                    : <TrendingDown className="h-3 w-3 text-red-400" />
                   }
                   <span className="text-[10px] text-muted-foreground font-medium">
                     {trend === "up" ? "Positive" : "Needs attention"}

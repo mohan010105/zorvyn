@@ -8,6 +8,7 @@ import { TrendingUp, Eye, EyeOff, AlertCircle, CheckCircle, Loader2, User } from
 import { motion } from "framer-motion";
 
 export default function Signup() {
+  console.log("[Signup] Rendering...");
   const { signup } = useAuth();
   const [, navigate] = useLocation();
   const [fullName, setFullName] = useState("");

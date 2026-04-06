@@ -38,10 +38,10 @@ import {
   PiggyBank,
   Upload
 } from "lucide-react";
-import { useState } from "react";
+import { useState, ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export function Layout({ children }: { children: React.ReactNode }) {
+export function Layout({ children }: { children: ReactNode }) {
   const [location] = useLocation();
   const { role, setRole } = useRole();
   const { theme, setTheme } = useTheme();

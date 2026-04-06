@@ -9,8 +9,8 @@ import {
   FileText, 
   Trash2, 
   CheckCircle, 
-  ArrowUpIcon, 
-  ArrowDownIcon, 
+  ArrowUp, 
+  ArrowDown, 
   TrendingUp, 
   TrendingDown, 
   History,
@@ -35,6 +35,7 @@ const itemVariants = {
 };
 
 export default function UploadPage() {
+  console.log("[UploadPage] Rendering...");
   const { localTransactions, addUploadedTransactions, clearUploadedTransactions } = useTransactions();
   const [justImported, setJustImported] = useState<{ count: number, income: number, expenses: number } | null>(null);
 
@@ -170,7 +171,7 @@ export default function UploadPage() {
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-xs font-semibold uppercase tracking-widest text-emerald-600">Total Uploaded Income</CardTitle>
-                  <ArrowUpIcon className="h-4 w-4 text-emerald-500" />
+                  <ArrowUp className="h-4 w-4 text-emerald-500" />
                 </div>
               </CardHeader>
               <CardContent>
@@ -183,7 +184,7 @@ export default function UploadPage() {
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-xs font-semibold uppercase tracking-widest text-red-500">Total Uploaded Expenses</CardTitle>
-                  <ArrowDownIcon className="h-4 w-4 text-red-500" />
+                  <ArrowDown className="h-4 w-4 text-red-500" />
                 </div>
               </CardHeader>
               <CardContent>

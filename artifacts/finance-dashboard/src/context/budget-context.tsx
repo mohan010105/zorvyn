@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, useEffect } from "react";
+import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from "react";
 import {
   Budget,
   BudgetStatus,
@@ -22,7 +22,7 @@ interface BudgetContextValue {
 
 const BudgetContext = createContext<BudgetContextValue | null>(null);
 
-export function BudgetProvider({ children }: { children: React.ReactNode }) {
+export function BudgetProvider({ children }: { children: ReactNode }) {
   const currentMonth = getCurrentMonth();
   const [budgets, setBudgets] = useState<Budget[]>(() =>
     loadBudgets().filter((b) => b.month === currentMonth)

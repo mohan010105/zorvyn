@@ -8,6 +8,7 @@ import { TrendingUp, Eye, EyeOff, AlertCircle, CheckCircle, Loader2 } from "luci
 import { motion } from "framer-motion";
 
 export default function Login() {
+  console.log("[Login] Rendering...");
   const { login } = useAuth();
   const [, navigate] = useLocation();
   const search = useSearch();

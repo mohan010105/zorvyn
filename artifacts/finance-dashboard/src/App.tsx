@@ -6,6 +6,7 @@ import { ThemeProvider } from "next-themes";
 import { RoleProvider } from "@/components/role-provider";
 import { AuthProvider, useAuth } from "@/context/auth-context";
 import { BudgetProvider } from "@/context/budget-context";
+import { ErrorBoundary } from "@/components/error-boundary";
 import { ProtectedRoute } from "@/components/protected-route";
 import { Layout } from "@/components/layout";
 import NotFound from "@/pages/not-found";
@@ -25,6 +26,7 @@ const queryClient = new QueryClient();
 function AppRoutes() {
   const { isAuthenticated, isLoading } = useAuth();
 
+  console.log("[AppRoutes] Rendering routes, auth state:", { isAuthenticated, isLoading });
   if (isLoading) return null;
 
   return (
@@ -59,24 +61,26 @@ function AppRoutes() {
 
 function App() {
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <RoleProvider>
-            <TransactionProvider>
-              <BudgetProvider>
-                <TooltipProvider>
-                  <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-                    <AppRoutes />
-                  </WouterRouter>
-                  <Toaster />
-                </TooltipProvider>
-              </BudgetProvider>
-            </TransactionProvider>
-          </RoleProvider>
-        </AuthProvider>
-      </QueryClientProvider>
-    </ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <RoleProvider>
+              <TransactionProvider>
+                <BudgetProvider>
+                  <TooltipProvider>
+                    <WouterRouter base={(import.meta.env.BASE_URL || "/").replace(/\/$/, "")}>
+                      <AppRoutes />
+                    </WouterRouter>
+                    <Toaster />
+                  </TooltipProvider>
+                </BudgetProvider>
+              </TransactionProvider>
+            </RoleProvider>
+          </AuthProvider>
+        </QueryClientProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }
 

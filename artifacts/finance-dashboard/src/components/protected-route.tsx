@@ -1,8 +1,9 @@
 import { useAuth } from "@/context/auth-context";
 import { Redirect } from "wouter";
 import { Spinner } from "@/components/ui/spinner";
+import { ReactNode } from "react";
 
-export function ProtectedRoute({ children }: { children: React.ReactNode }) {
+export function ProtectedRoute({ children }: { children: ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {

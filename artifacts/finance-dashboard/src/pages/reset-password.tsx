@@ -8,6 +8,7 @@ import { TrendingUp, Eye, EyeOff, AlertCircle, CheckCircle, Loader2, ArrowLeft, 
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function ResetPassword() {
+  console.log("[ResetPassword] Rendering...");
   const { resetPassword } = useAuth();
   const [, navigate] = useLocation();
   const [email, setEmail] = useState("");
