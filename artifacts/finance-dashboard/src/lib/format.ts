@@ -1,12 +1,13 @@
-export function formatCurrency(amount: number): string {
+export function formatCurrency(amount: number | string): string {
+  const value = typeof amount === "string" ? parseFloat(amount) : amount;
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
-  }).format(amount);
+  }).format(value || 0);
 }
 
-export function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString("en-US", {
+export function formatDate(date: string | Date): string {
+  return new Date(date).toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
     year: "numeric"

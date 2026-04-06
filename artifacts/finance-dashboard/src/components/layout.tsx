@@ -35,7 +35,8 @@ import {
   LogOut,
   User,
   ChevronDown,
-  PiggyBank
+  PiggyBank,
+  Upload
 } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -64,6 +65,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     { href: "/transactions", label: "Transactions", icon: ArrowRightLeft },
     { href: "/insights", label: "Insights", icon: LineChart },
     { href: "/budget", label: "Budget", icon: PiggyBank },
+    { href: "/upload", label: "Upload Statement", icon: Upload },
   ];
 
   const pageTitleMap: Record<string, string> = {
@@ -71,6 +73,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     "/transactions": "Transactions",
     "/insights": "Insights",
     "/budget": "Budget Planner",
+    "/upload": "Statement Analysis",
   };
   const pageTitle = pageTitleMap[location] ?? (location.substring(1).charAt(0).toUpperCase() + location.substring(2));
   const pageSubtitleMap: Record<string, string> = {
@@ -78,6 +81,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     "/transactions": "Manage your records",
     "/insights": "Smart financial analysis",
     "/budget": "Monthly spending limits",
+    "/upload": "Parse & analyze statements",
   };
 
   const handleQuickAddSuccess = () => {

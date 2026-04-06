@@ -1,7 +1,7 @@
 export interface Transaction {
   id: number;
-  date: string;
-  amount: string;
+  date: string | Date;
+  amount: string | number;
   category: string;
   type: "income" | "expense";
   description: string;
@@ -19,12 +19,13 @@ export interface AIInsight {
   detail?: string;
 }
 
-function parseAmount(amount: string): number {
-  return parseFloat(amount) || 0;
+function parseAmount(amount: string | number): number {
+  return typeof amount === "number" ? amount : parseFloat(amount) || 0;
 }
 
-function getMonthKey(date: string): string {
-  return date.slice(0, 7);
+export function getMonthKey(date: string | Date): string {
+  const d = typeof date === "string" ? date : date.toISOString();
+  return d.slice(0, 7);
 }
 
 function getMonthLabel(monthKey: string): string {
@@ -57,7 +58,16 @@ export function getMonthlyData(transactions: Transaction[]) {
   });
   return Object.entries(monthly)
     .sort(([a], [b]) => a.localeCompare(b))
-    .map(([key, data]) => ({ key, label: getMonthLabel(key), ...data }));
+    .map(([key, data]) => ({ key, month: key, label: getMonthLabel(key), ...data }));
+}
+
+export function getTrendData(transactions: Transaction[]) {
+  const monthly = getMonthlyData(transactions);
+  let balance = 0;
+  return monthly.map(m => {
+    balance += (m.income - m.expenses);
+    return { ...m, balance };
+  });
 }
 
 export function compareMonthlyExpenses(transactions: Transaction[]) {

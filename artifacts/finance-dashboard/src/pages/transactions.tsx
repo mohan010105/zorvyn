@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { useListTransactions, useDeleteTransaction } from "@workspace/api-client-react";
+import { useState, useMemo } from "react";
+import { useTransactions } from "@/context/transaction-context";
+import { useDeleteTransaction } from "@workspace/api-client-react";
 import { useRole } from "@/components/role-provider";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { Button } from "@/components/ui/button";
@@ -22,16 +23,30 @@ export default function Transactions() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTransactionId, setEditingTransactionId] = useState<number | null>(null);
 
-  const { data: transactions, isLoading, refetch } = useListTransactions({
-    search: search || undefined,
-    type: typeFilter !== "all" ? (typeFilter as "income" | "expense") : undefined,
-    sortBy: "date",
-    sortOrder: "desc"
-  });
-
+  const { allTransactions, isLoading, refetch } = useTransactions();
   const deleteMutation = useDeleteTransaction();
 
+  const filteredTransactions = useMemo(() => {
+    return allTransactions.filter(t => {
+      const matchesSearch = !search || 
+        t.description.toLowerCase().includes(search.toLowerCase()) ||
+        t.category.toLowerCase().includes(search.toLowerCase());
+      
+      const matchesType = typeFilter === "all" || t.type === typeFilter;
+      
+      return matchesSearch && matchesType;
+    });
+  }, [allTransactions, search, typeFilter]);
+
   const handleDelete = async (id: number) => {
+    // Check if it's a local transaction (some are local, some are remote)
+    // For now, only allow deleting remote via API
+    const isLocal = id >= 1000000;
+    if (isLocal) {
+        toast({ title: "Local transaction deletion coming soon", variant: "default" });
+        return;
+    }
+
     if (!confirm("Delete this transaction? This cannot be undone.")) return;
     try {
       await deleteMutation.mutateAsync({ id });
@@ -43,6 +58,11 @@ export default function Transactions() {
   };
 
   const openEditModal = (id: number) => {
+    const isLocal = id >= 1000000;
+    if (isLocal) {
+        toast({ title: "Edits for uploaded data are limited", variant: "default" });
+        return;
+    }
     setEditingTransactionId(id);
     setIsModalOpen(true);
   };
@@ -53,11 +73,11 @@ export default function Transactions() {
   };
 
   const handleExportCSV = () => {
-    if (!transactions || transactions.length === 0) return;
+    if (!filteredTransactions || filteredTransactions.length === 0) return;
     const headers = ["Date", "Description", "Category", "Type", "Amount"];
     const csvContent = [
       headers.join(","),
-      ...transactions.map(t =>
+      ...filteredTransactions.map(t =>
         `"${t.date}","${t.description}","${t.category}","${t.type}","${t.amount}"`
       )
     ].join("\n");
@@ -75,7 +95,7 @@ export default function Transactions() {
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+      transition={{ duration: 0.35 }}
       className="space-y-5 max-w-7xl mx-auto"
     >
       {/* Page header */}
@@ -83,7 +103,7 @@ export default function Transactions() {
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Transactions</h2>
           <p className="text-sm text-muted-foreground mt-1">
-            {transactions ? `${transactions.length} records found` : 'Manage your financial history'}
+            {filteredTransactions ? `${filteredTransactions.length} records found` : 'Manage your financial history'}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -91,7 +111,7 @@ export default function Transactions() {
             variant="outline"
             size="sm"
             onClick={handleExportCSV}
-            disabled={!transactions || transactions.length === 0}
+            disabled={filteredTransactions.length === 0}
             className="h-9 rounded-xl border-border/60 bg-background/60 backdrop-blur-sm hover:bg-muted/70 text-sm font-medium"
           >
             <Download className="h-4 w-4 mr-2" />
@@ -166,7 +186,7 @@ export default function Transactions() {
                     {isAdmin && <TableCell><Skeleton className="h-7 w-14 ml-auto" /></TableCell>}
                   </TableRow>
                 ))
-              ) : transactions?.length === 0 ? (
+              ) : filteredTransactions.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={isAdmin ? 6 : 5}>
                     <div className="flex flex-col items-center justify-center py-16 text-center">
@@ -184,12 +204,12 @@ export default function Transactions() {
                 </TableRow>
               ) : (
                 <AnimatePresence>
-                  {transactions?.map((t, i) => (
+                  {filteredTransactions.map((t, i) => (
                     <motion.tr
                       key={t.id}
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      transition={{ delay: i * 0.02, duration: 0.2 }}
+                      transition={{ delay: i * 0.01, duration: 0.2 }}
                       className="group border-b border-border/40 hover:bg-muted/30 transition-colors"
                     >
                       <TableCell className="text-xs text-muted-foreground font-medium py-3.5 w-[110px]">
@@ -206,6 +226,7 @@ export default function Transactions() {
                             }
                           </div>
                           <span className="text-sm font-medium text-foreground truncate max-w-[200px]">{t.description}</span>
+                          {t.id >= 1000000 && <Badge variant="secondary" className="text-[8px] h-3 px-1 leading-none bg-primary/10 text-primary border-none">Imported</Badge>}
                         </div>
                       </TableCell>
                       <TableCell className="hidden sm:table-cell py-3.5">
@@ -238,6 +259,7 @@ export default function Transactions() {
                               size="icon"
                               className="h-7 w-7 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10"
                               onClick={() => openEditModal(t.id)}
+                              disabled={t.id >= 1000000}
                             >
                               <Edit className="h-3.5 w-3.5" />
                             </Button>
@@ -246,6 +268,7 @@ export default function Transactions() {
                               size="icon"
                               className="h-7 w-7 rounded-lg text-muted-foreground hover:text-red-500 hover:bg-red-500/10"
                               onClick={() => handleDelete(t.id)}
+                              disabled={t.id >= 1000000}
                             >
                               <Trash2 className="h-3.5 w-3.5" />
                             </Button>

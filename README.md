@@ -129,3 +129,16 @@ All insights are computed on the frontend from transaction data — no external 
 | Savings This Period | Income minus expenses with savings rate |
 | Next Month Forecast | Trend-adjusted 3-month moving average |
 | Financial Health Score | 0–100 score across savings, diversity, consistency |
+
+---
+
+## Deployment on Vercel
+
+To deploy the frontend application on Vercel:
+
+1. Push your project to GitHub.
+2. Import the repository in Vercel and set the "Root Directory" to `artifacts/finance-dashboard`.
+3. Vercel automatically detects Vite and will use the configured build command.
+4. Click **Deploy**.
+
+The project is fully pre-configured with `vite.config.js`, tracking routing correctly with a proper `vercel.json` and a standalone dependency setup.

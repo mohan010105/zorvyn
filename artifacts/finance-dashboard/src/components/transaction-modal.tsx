@@ -35,7 +35,7 @@ export function TransactionModal({
   const isEditing = !!transactionId;
 
   const { data: transaction } = useGetTransaction(transactionId!, {
-    query: { enabled: !!transactionId && isOpen }
+    query: { enabled: !!transactionId && isOpen } as any
   });
 
   const createMutation = useCreateTransaction();

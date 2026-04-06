@@ -62,7 +62,7 @@ router.post("/", async (req, res) => {
     const [created] = await db
       .insert(transactionsTable)
       .values({
-        date: body.date,
+        date: body.date.toISOString().split("T")[0],
         amount: body.amount.toString(),
         category: body.category,
         type: body.type,
@@ -111,7 +111,7 @@ router.put("/:id", async (req, res) => {
     const body = UpdateTransactionBody.parse(req.body);
 
     const updateData: Record<string, unknown> = {};
-    if (body.date !== undefined) updateData.date = body.date;
+    if (body.date !== undefined) updateData.date = body.date.toISOString().split("T")[0];
     if (body.amount !== undefined) updateData.amount = body.amount.toString();
     if (body.category !== undefined) updateData.category = body.category;
     if (body.type !== undefined) updateData.type = body.type;

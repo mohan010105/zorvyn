@@ -1,11 +1,10 @@
 import { useMemo } from "react";
-import { useListTransactions, useGetMonthlyComparison } from "@workspace/api-client-react";
+import { useTransactions } from "@/context/transaction-context";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency } from "@/lib/format";
 import { generateAllInsights, calculateFinancialHealthScore, getMonthlyData } from "@/lib/ai-insights";
-import type { Transaction } from "@/lib/ai-insights";
 import { AIInsightCard } from "@/components/ai-insight-card";
 import {
   BarChart,
@@ -30,14 +29,11 @@ const containerVariants = {
 };
 const itemVariants = {
   hidden: { opacity: 0, y: 16 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: [0.4, 0, 0.2, 1] } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.35 } }
 };
 
 export default function Insights() {
-  const { data: rawTransactions, isLoading } = useListTransactions({ sortBy: "date", sortOrder: "asc" });
-  const { data: comparison, isLoading: loadingComparison } = useGetMonthlyComparison();
-
-  const transactions = (rawTransactions ?? []) as Transaction[];
+  const { allTransactions: transactions, isLoading } = useTransactions();
 
   const insights = useMemo(() => generateAllInsights(transactions), [transactions]);
   const healthScore = useMemo(
@@ -55,6 +51,9 @@ export default function Insights() {
     : [];
 
   const isEmpty = !isLoading && transactions.length < 2;
+
+  // Use the monthlyData already computed from all transactions
+  const comparison = monthlyData;
 
   return (
     <motion.div
@@ -93,7 +92,7 @@ export default function Insights() {
               <div>
                 <p className="text-lg font-semibold">Not enough data yet</p>
                 <p className="text-sm text-muted-foreground mt-1 max-w-[300px]">
-                  Add more transactions to unlock AI-powered insights about your finances.
+                  Add more transactions or upload a bank statement to unlock AI-powered insights about your finances.
                 </p>
               </div>
             </CardContent>
@@ -137,7 +136,7 @@ export default function Insights() {
                 </div>
               </CardHeader>
               <CardContent className="h-[320px]">
-                {loadingComparison ? (
+                {isLoading ? (
                   <Skeleton className="w-full h-full rounded-xl" />
                 ) : comparison && comparison.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
@@ -148,7 +147,7 @@ export default function Insights() {
                       barSize={24}
                     >
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.5} />
-                      <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" fontSize={11} tickLine={false} axisLine={false} />
+                      <XAxis dataKey="label" stroke="hsl(var(--muted-foreground))" fontSize={11} tickLine={false} axisLine={false} />
                       <YAxis
                         stroke="hsl(var(--muted-foreground))"
                         fontSize={11}
@@ -223,7 +222,7 @@ export default function Insights() {
                             <motion.div
                               initial={{ width: 0 }}
                               animate={{ width: `${(b.score / b.max) * 100}%` }}
-                              transition={{ duration: 0.7, ease: "easeOut" }}
+                              transition={{ duration: 0.7 }}
                               className="h-full bg-primary rounded-full"
                             />
                           </div>

@@ -23,8 +23,8 @@ function fmt(amount: number): string {
   }).format(amount);
 }
 
-function parseAmount(a: string) {
-  return parseFloat(a) || 0;
+function parseAmount(a: string | number) {
+  return typeof a === "number" ? a : parseFloat(a) || 0;
 }
 
 function lowercase(s: string) {

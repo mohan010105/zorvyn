@@ -1,6 +1,6 @@
 import { useMemo, useEffect } from "react";
 import { Link } from "wouter";
-import { useGetFinancialSummary, useGetBalanceTrend, useGetSpendingBreakdown, useListTransactions } from "@workspace/api-client-react";
+import { useTransactions } from "@/context/transaction-context";
 import { useBudget } from "@/context/budget-context";
 import { alertStyle, getAlertMessage } from "@/lib/budget";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/lib/format";
-import { generateAllInsights } from "@/lib/ai-insights";
+import { generateAllInsights, getTrendData, calculateCategorySpending } from "@/lib/ai-insights";
 import type { Transaction } from "@/lib/ai-insights";
 import { AIInsightCard } from "@/components/ai-insight-card";
 import { 
@@ -41,33 +41,50 @@ const containerVariants = {
 };
 const itemVariants = {
   hidden: { opacity: 0, y: 16 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: [0.4, 0, 0.2, 1] } }
+  show: { opacity: 1, y: 0, transition: { duration: 0.35 } }
 };
 
 export default function Dashboard() {
-  const { data: summary, isLoading: loadingSummary } = useGetFinancialSummary();
-  const { data: trend, isLoading: loadingTrend } = useGetBalanceTrend();
-  const { data: breakdown, isLoading: loadingBreakdown } = useGetSpendingBreakdown();
-  const { data: recentTransactions, isLoading: loadingRecent } = useListTransactions(
-    { sortBy: "date", sortOrder: "desc" },
-    { query: { queryKey: ["recent-transactions"] } }
-  );
+  const { allTransactions, isLoading } = useTransactions();
+  
+  const summary = useMemo(() => {
+    let income = 0;
+    let expenses = 0;
+    allTransactions.forEach(t => {
+      const amt = typeof t.amount === 'number' ? t.amount : parseFloat(t.amount);
+      if (t.type === 'income') income += amt;
+      else expenses += amt;
+    });
+    const balance = income - expenses;
+    const savingsRate = income > 0 ? ((income - expenses) / income) * 100 : 0;
+    return {
+      totalBalance: balance,
+      totalIncome: income,
+      totalExpenses: expenses,
+      savingsRate
+    };
+  }, [allTransactions]);
 
-  const recent = recentTransactions?.slice(0, 7) ?? [];
+  const trend = useMemo(() => getTrendData(allTransactions), [allTransactions]);
+  
+  const breakdownData = useMemo(() => {
+    const spending = calculateCategorySpending(allTransactions);
+    return Object.entries(spending).map(([category, amount]) => ({ category, amount }));
+  }, [allTransactions]);
+
+  const recent = allTransactions.slice(0, 7);
 
   const aiInsights = useMemo(
-    () => generateAllInsights((recentTransactions ?? []) as Transaction[]),
-    [recentTransactions]
+    () => generateAllInsights(allTransactions),
+    [allTransactions]
   );
   const topInsights = aiInsights.slice(0, 2);
 
-  // Keep budget spending in sync with dashboard transactions
+  // Keep budget spending in sync with transactions
   const { statuses: budgetStatuses, refreshWithTransactions } = useBudget();
   useEffect(() => {
-    if (recentTransactions) {
-      refreshWithTransactions(recentTransactions as Transaction[]);
-    }
-  }, [recentTransactions, refreshWithTransactions]);
+    refreshWithTransactions(allTransactions);
+  }, [allTransactions, refreshWithTransactions]);
 
   // Top 3 budget categories by spending percentage
   const topBudgets = [...budgetStatuses]
@@ -90,16 +107,16 @@ export default function Dashboard() {
       <motion.div variants={itemVariants} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <SummaryCard
           title="Total Balance"
-          value={summary?.totalBalance}
-          loading={loadingSummary}
+          value={summary.totalBalance}
+          loading={isLoading}
           icon={WalletIcon}
           accent="blue"
-          trend={summary && summary.totalBalance > 0 ? "up" : "neutral"}
+          trend={summary.totalBalance > 0 ? "up" : "neutral"}
         />
         <SummaryCard
           title="Total Income"
-          value={summary?.totalIncome}
-          loading={loadingSummary}
+          value={summary.totalIncome}
+          loading={isLoading}
           icon={ArrowUpIcon}
           valueColor="text-emerald-500"
           accent="green"
@@ -107,8 +124,8 @@ export default function Dashboard() {
         />
         <SummaryCard
           title="Total Expenses"
-          value={summary?.totalExpenses}
-          loading={loadingSummary}
+          value={summary.totalExpenses}
+          loading={isLoading}
           icon={ArrowDownIcon}
           valueColor="text-red-500"
           accent="red"
@@ -116,12 +133,12 @@ export default function Dashboard() {
         />
         <SummaryCard
           title="Savings Rate"
-          value={summary?.savingsRate ? `${summary.savingsRate.toFixed(1)}%` : undefined}
-          loading={loadingSummary}
+          value={summary.savingsRate !== undefined ? `${summary.savingsRate.toFixed(1)}%` : undefined}
+          loading={isLoading}
           icon={PiggyBankIcon}
           isCurrency={false}
           accent="purple"
-          trend={summary && summary.savingsRate > 20 ? "up" : "neutral"}
+          trend={summary.savingsRate > 20 ? "up" : "neutral"}
         />
       </motion.div>
 
@@ -133,12 +150,12 @@ export default function Dashboard() {
             <div className="flex items-center justify-between">
               <CardTitle className="text-base font-semibold">Balance Trend</CardTitle>
               <Badge variant="outline" className="text-xs font-medium bg-primary/5 border-primary/20 text-primary">
-                Last 4 months
+                All history
               </Badge>
             </div>
           </CardHeader>
           <CardContent className="h-[300px] px-2">
-            {loadingTrend ? (
+            {isLoading ? (
               <Skeleton className="w-full h-full rounded-xl" />
             ) : trend && trend.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
@@ -154,7 +171,7 @@ export default function Dashboard() {
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.5} />
-                  <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" fontSize={11} tickLine={false} axisLine={false} />
+                  <XAxis dataKey="label" stroke="hsl(var(--muted-foreground))" fontSize={11} tickLine={false} axisLine={false} />
                   <YAxis
                     stroke="hsl(var(--muted-foreground))"
                     fontSize={11}
@@ -195,13 +212,13 @@ export default function Dashboard() {
             </div>
           </CardHeader>
           <CardContent className="h-[300px]">
-            {loadingBreakdown ? (
+            {isLoading ? (
               <Skeleton className="w-full h-full rounded-xl" />
-            ) : breakdown && breakdown.length > 0 ? (
+            ) : breakdownData && breakdownData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
-                    data={breakdown}
+                    data={breakdownData}
                     cx="50%"
                     cy="44%"
                     innerRadius={62}
@@ -213,7 +230,7 @@ export default function Dashboard() {
                     animationBegin={200}
                     animationDuration={700}
                   >
-                    {breakdown.map((_, index) => (
+                    {breakdownData.map((_, index) => (
                       <Cell
                         key={`cell-${index}`}
                         fill={CHART_COLORS[index % CHART_COLORS.length]}
@@ -265,7 +282,7 @@ export default function Dashboard() {
             </div>
           </CardHeader>
           <CardContent className="pt-0 pb-4">
-            {loadingRecent ? (
+            {isLoading ? (
               <div className="space-y-2">
                 <Skeleton className="h-14 w-full rounded-xl" />
                 <Skeleton className="h-14 w-full rounded-xl" />
@@ -335,7 +352,7 @@ export default function Dashboard() {
                         <motion.div
                           initial={{ width: 0 }}
                           animate={{ width: `${pct}%` }}
-                          transition={{ duration: 0.6, delay: i * 0.08, ease: "easeOut" }}
+                          transition={{ duration: 0.6, delay: i * 0.08 }}
                           className={`h-full rounded-full ${styles.bar}`}
                         />
                       </div>
@@ -369,7 +386,7 @@ export default function Dashboard() {
             )}
           </CardHeader>
           <CardContent>
-            {loadingRecent ? (
+            {isLoading ? (
               <div className="space-y-3">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <div key={i} className="flex items-center gap-3">
@@ -465,7 +482,7 @@ function SummaryCard({
   return (
     <motion.div
       whileHover={{ y: -3, scale: 1.005 }}
-      transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+      transition={{ duration: 0.2 }}
     >
       <Card className={`glass-card border-0 overflow-hidden relative ${accentClass}`}>
         <CardHeader className="flex flex-row items-center justify-between pb-3 pt-5">

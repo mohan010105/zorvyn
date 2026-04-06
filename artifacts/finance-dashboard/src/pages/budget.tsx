@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useListTransactions } from "@workspace/api-client-react";
+import { useTransactions } from "@/context/transaction-context";
 import { useBudget } from "@/context/budget-context";
 import {
   BUDGET_CATEGORIES,
@@ -23,7 +23,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { motion, AnimatePresence } from "framer-motion";
-import type { Transaction } from "@/lib/ai-insights";
 import {
   PiggyBank,
   Plus,
@@ -41,7 +40,7 @@ const containerVariants = {
 };
 const itemVariants = {
   hidden: { opacity: 0, y: 16 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: [0.4, 0, 0.2, 1] } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.35 } }
 };
 
 function AlertIcon({ level }: { level: BudgetStatus["alertLevel"] }) {
@@ -127,7 +126,7 @@ function BudgetCard({
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${pct}%` }}
-                transition={{ duration: 0.7, delay: index * 0.05 + 0.1, ease: "easeOut" }}
+                transition={{ duration: 0.7, delay: index * 0.05 + 0.1 }}
                 className={`h-full rounded-full ${styles.bar}`}
               />
             </div>
@@ -240,22 +239,17 @@ function BudgetForm({
 }
 
 export default function Budget() {
-  const { data: rawTransactions, isLoading } = useListTransactions(
-    { sortBy: "date", sortOrder: "asc" },
-    { query: { queryKey: ["budget-transactions"] } }
-  );
+  const { allTransactions, isLoading: loadingTransactions } = useTransactions();
   const { budgets, statuses, currentMonth, addOrUpdateBudget, removeBudget, refreshWithTransactions } =
     useBudget();
 
   const [showForm, setShowForm] = useState(false);
   const [editingStatus, setEditingStatus] = useState<BudgetStatus | null>(null);
 
-  // Keep budget spending in sync with transactions
+  // Keep budget spending in sync with processed transactions
   useEffect(() => {
-    if (rawTransactions) {
-      refreshWithTransactions(rawTransactions as Transaction[]);
-    }
-  }, [rawTransactions, refreshWithTransactions]);
+    refreshWithTransactions(allTransactions);
+  }, [allTransactions, refreshWithTransactions]);
 
   const handleSave = (category: string, limit: number) => {
     addOrUpdateBudget(category, limit);
@@ -382,7 +376,7 @@ export default function Budget() {
       </AnimatePresence>
 
       {/* Budget cards grid */}
-      {isLoading ? (
+      {loadingTransactions ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {[1, 2, 3].map((i) => <Skeleton key={i} className="h-40 rounded-2xl" />)}
         </div>

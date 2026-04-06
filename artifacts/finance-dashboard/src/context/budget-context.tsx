@@ -8,7 +8,7 @@ import {
   computeBudgetStatuses,
   getCurrentMonth,
 } from "@/lib/budget";
-import { calculateCategorySpending } from "@/lib/ai-insights";
+import { calculateCategorySpending, getMonthKey } from "@/lib/ai-insights";
 import type { Transaction } from "@/lib/ai-insights";
 
 interface BudgetContextValue {
@@ -50,7 +50,7 @@ export function BudgetProvider({ children }: { children: React.ReactNode }) {
   const refreshWithTransactions = useCallback((transactions: Transaction[]) => {
     const thisMonth = getCurrentMonth();
     const monthlyTx = transactions.filter(
-      (t) => t.date.slice(0, 7) === thisMonth
+      (t) => getMonthKey(t.date) === thisMonth
     );
     setCategorySpending(calculateCategorySpending(monthlyTx));
   }, []);

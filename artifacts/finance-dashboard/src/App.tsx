@@ -17,6 +17,9 @@ import Login from "@/pages/login";
 import Signup from "@/pages/signup";
 import ResetPassword from "@/pages/reset-password";
 
+import { TransactionProvider } from "@/context/transaction-context";
+import UploadPage from "@/pages/upload";
+
 const queryClient = new QueryClient();
 
 function AppRoutes() {
@@ -56,6 +59,11 @@ function AppRoutes() {
           <Layout><BudgetPage /></Layout>
         </ProtectedRoute>
       </Route>
+      <Route path="/upload">
+        <ProtectedRoute>
+          <Layout><UploadPage /></Layout>
+        </ProtectedRoute>
+      </Route>
 
       <Route>
         <ProtectedRoute>
@@ -69,20 +77,22 @@ function AppRoutes() {
 function App() {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-      <AuthProvider>
-        <RoleProvider>
-          <BudgetProvider>
-          <QueryClientProvider client={queryClient}>
-            <TooltipProvider>
-              <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-                <AppRoutes />
-              </WouterRouter>
-              <Toaster />
-            </TooltipProvider>
-          </QueryClientProvider>
-          </BudgetProvider>
-        </RoleProvider>
-      </AuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <RoleProvider>
+            <TransactionProvider>
+              <BudgetProvider>
+                <TooltipProvider>
+                  <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+                    <AppRoutes />
+                  </WouterRouter>
+                  <Toaster />
+                </TooltipProvider>
+              </BudgetProvider>
+            </TransactionProvider>
+          </RoleProvider>
+        </AuthProvider>
+      </QueryClientProvider>
     </ThemeProvider>
   );
 }
