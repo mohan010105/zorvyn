@@ -39,35 +39,18 @@ function AppRoutes() {
         {isAuthenticated ? <Redirect to="/" /> : <ResetPassword />}
       </Route>
 
-      <Route path="/">
-        <ProtectedRoute>
-          <Layout><Dashboard /></Layout>
-        </ProtectedRoute>
-      </Route>
-      <Route path="/transactions">
-        <ProtectedRoute>
-          <Layout><Transactions /></Layout>
-        </ProtectedRoute>
-      </Route>
-      <Route path="/insights">
-        <ProtectedRoute>
-          <Layout><Insights /></Layout>
-        </ProtectedRoute>
-      </Route>
-      <Route path="/budget">
-        <ProtectedRoute>
-          <Layout><BudgetPage /></Layout>
-        </ProtectedRoute>
-      </Route>
-      <Route path="/upload">
-        <ProtectedRoute>
-          <Layout><UploadPage /></Layout>
-        </ProtectedRoute>
-      </Route>
-
       <Route>
         <ProtectedRoute>
-          <Layout><NotFound /></Layout>
+          <Layout>
+            <Switch>
+              <Route path="/"><Dashboard /></Route>
+              <Route path="/transactions"><Transactions /></Route>
+              <Route path="/insights"><Insights /></Route>
+              <Route path="/budget"><BudgetPage /></Route>
+              <Route path="/upload"><UploadPage /></Route>
+              <Route><NotFound /></Route>
+            </Switch>
+          </Layout>
         </ProtectedRoute>
       </Route>
     </Switch>
