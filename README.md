@@ -1,144 +1,343 @@
-# Coffer — AI-Powered Finance Dashboard
+# Finance Dashboard – Smart Financial Analytics Platform
 
-A modern, premium fintech SaaS dashboard built with React + Vite, Express, PostgreSQL, and a fully frontend AI insights engine.
+A modern **FinTech dashboard application** that helps users track financial activity, analyze spending patterns, and generate intelligent financial insights through interactive visualizations and analytics tools.
 
-## Features
-
-- **Dashboard** — Summary cards, balance trend, spending breakdown, AI insights preview
-- **Transactions** — CRUD with search, filter, CSV export
-- **AI Insights** — 6 smart analytics: spending patterns, month-over-month comparison, savings, next-month prediction, financial health score
-- **Authentication** — LocalStorage-based login, signup, and password reset
-- **Role-based UI** — Admin (full CRUD) vs Viewer (read-only)
-- **Dark mode** — Persisted preference, premium glassmorphism design
+This project demonstrates **frontend engineering, UI design, state management, data visualization, and financial analytics concepts** in a real-world dashboard environment.
 
 ---
 
-## Running on Replit (recommended)
+# Project Overview
 
-Everything is pre-configured. Just open the project in Replit — both the API server and the Vite dev server start automatically.
+The Finance Dashboard is designed as a **financial analytics platform** where users can monitor income, expenses, and financial trends in an intuitive interface.
 
----
+The application provides tools to:
 
-## Running Locally
+• Track financial transactions
+• Visualize spending patterns
+• Generate financial insights
+• Upload bank statements for automatic analysis
+• Manage budgets and financial activity
 
-### Prerequisites
-
-- **Node.js** 18+ and **pnpm** 9+
-- **PostgreSQL** database
-
-### 1. Install pnpm
-
-```bash
-npm install -g pnpm
-```
-
-### 2. Install dependencies
-
-```bash
-pnpm install
-```
-
-### 3. Set up environment variables
-
-Create a `.env` file in `artifacts/api-server/`:
-
-```env
-DATABASE_URL=postgresql://user:password@localhost:5432/coffer
-SESSION_SECRET=your-secret-key-here
-PORT=8080
-```
-
-Create a `.env` file in `artifacts/finance-dashboard/`:
-
-```env
-PORT=5173
-BASE_PATH=/
-VITE_API_BASE_URL=http://localhost:8080
-```
-
-### 4. Set up the database
-
-```bash
-pnpm --filter @workspace/db run push
-pnpm --filter @workspace/api-server run seed
-```
-
-### 5. Start both services
-
-**Terminal 1 — API Server:**
-```bash
-pnpm --filter @workspace/api-server run dev
-```
-
-**Terminal 2 — Frontend:**
-```bash
-pnpm --filter @workspace/finance-dashboard run dev:standalone
-```
-
-The app opens at **http://localhost:5173**
+The dashboard is designed with a **modern SaaS-style interface** inspired by professional fintech products.
 
 ---
 
-## Project Structure
+# Key Features
 
-```
-/
-├── artifacts/
-│   ├── api-server/          # Express REST API (port 8080)
-│   │   └── src/routes/      # /api/transactions, /api/insights
-│   └── finance-dashboard/   # React + Vite frontend (port 5173)
-│       └── src/
-│           ├── components/  # UI components, layout, auth
-│           ├── context/     # AuthContext (localStorage auth)
-│           ├── lib/         # ai-insights.ts, format.ts, utils.ts
-│           └── pages/       # dashboard, transactions, insights, login, signup
-├── lib/
-│   ├── api-client-react/    # Generated React Query hooks
-│   └── db/                  # Drizzle ORM schema + DB client
-└── pnpm-workspace.yaml
-```
+## Authentication System
+
+Secure authentication interface including:
+
+• Login page
+• Signup page
+• Reset password functionality
+
+User data is stored locally for demonstration purposes.
 
 ---
 
-## Tech Stack
+## Dashboard Overview
 
-| Layer | Tech |
-|-------|------|
-| Frontend | React 19, Vite 7, TypeScript |
-| Styling | Tailwind CSS v4, glassmorphism |
-| Charts | Recharts |
-| Animation | Framer Motion |
-| Routing | Wouter |
-| State | TanStack Query |
-| Auth | Custom LocalStorage (frontend-only) |
-| Backend | Express, Pino logger |
-| Database | PostgreSQL + Drizzle ORM |
-| API | OpenAPI spec + codegen |
+The main dashboard provides a quick summary of financial activity including:
+
+• Total Balance
+• Total Income
+• Total Expenses
+
+Interactive visualizations allow users to understand financial trends at a glance.
 
 ---
 
-## AI Insights Engine
+## Financial Data Visualization
 
-All insights are computed on the frontend from transaction data — no external AI API needed.
+The application includes multiple charts for financial analysis:
 
-| Insight | Description |
-|---------|-------------|
-| Highest Spending Category | Which category consumes the most |
-| Monthly Expense Change | % change vs previous month |
-| Spending Concentration | Top 2 categories as % of total |
-| Savings This Period | Income minus expenses with savings rate |
-| Next Month Forecast | Trend-adjusted 3-month moving average |
-| Financial Health Score | 0–100 score across savings, diversity, consistency |
+• Balance trend chart (time-based visualization)
+• Spending breakdown by category
+• Monthly financial comparison
+
+Charts automatically update when transactions change.
 
 ---
 
-## Deployment on Vercel
+## Transaction Management
 
-To deploy the frontend application on Vercel:
+Users can manage their financial records through a transaction system that includes:
 
-1. Push your project to GitHub.
-2. Import the repository in Vercel and set the "Root Directory" to `artifacts/finance-dashboard`.
-3. Vercel automatically detects Vite and will use the configured build command.
-4. Click **Deploy**.
+• Transaction list
+• Date, amount, category, and type information
+• Search functionality
+• Filtering options
+• Sorting by date or amount
 
-The project is fully pre-configured with `vite.config.js`, tracking routing correctly with a proper `vercel.json` and a standalone dependency setup.
+Admin role users can:
+
+• Add transactions
+• Edit transactions
+• Delete transactions
+
+Viewer role users can only view financial data.
+
+---
+
+## Role-Based Interface
+
+The application simulates a simple role-based interface.
+
+Roles include:
+
+Viewer
+Admin
+
+Viewer permissions:
+
+• View financial analytics
+• Browse transactions
+
+Admin permissions:
+
+• Manage transactions
+• Modify financial data
+
+This feature demonstrates UI-level RBAC simulation.
+
+---
+
+## Financial Insights Engine
+
+The system analyzes financial data to generate helpful insights such as:
+
+• Highest spending category
+• Monthly spending comparison
+• Savings calculation
+• Predicted future expenses
+
+These insights help users understand their financial behavior.
+
+---
+
+## AI Financial Assistant
+
+An integrated financial assistant allows users to ask questions about their financial data.
+
+Examples include:
+
+• Where did I spend the most money?
+• How much did I save this month?
+• What are my total expenses?
+• Predict next month expenses.
+
+The assistant analyzes transaction data to generate responses.
+
+---
+
+## Budget Planner
+
+The dashboard includes a smart budgeting system that allows users to:
+
+• Set category budgets
+• Track spending progress
+• Receive overspending alerts
+
+This helps users maintain better financial discipline.
+
+---
+
+## Bank Statement Upload
+
+Users can upload financial data files to automatically generate analytics.
+
+Supported formats:
+
+• CSV files
+• Excel files
+
+The system parses uploaded data and automatically:
+
+• Converts entries into transactions
+• Updates charts
+• Generates insights
+
+This feature simulates real fintech data ingestion workflows.
+
+---
+
+# Technology Stack
+
+Frontend Framework
+React.js (Vite)
+
+Programming Language
+JavaScript
+
+UI Styling
+Tailwind CSS
+
+Charts & Visualization
+Recharts
+
+Icons
+Lucide React
+
+File Parsing
+PapaParse (CSV)
+SheetJS (Excel)
+
+Routing
+React Router
+
+State Management
+React Context API
+
+Local Storage
+Browser LocalStorage
+
+Deployment
+Vercel
+
+---
+
+# Project Architecture
+
+The application follows a modular component-based architecture.
+
+Main layers include:
+
+UI Components
+State Management
+Utility Functions
+Data Processing Modules
+
+This structure ensures maintainability and scalability.
+
+---
+
+# Folder Structure
+
+src/
+
+components/
+Reusable UI components such as cards, charts, modals, tables, and layout components.
+
+pages/
+Application pages including login, signup, dashboard, transactions, insights, and upload.
+
+context/
+Global state management using React Context.
+
+utils/
+Helper functions for calculations, insights generation, and data processing.
+
+styles/
+Global styling and UI design system.
+
+data/
+Sample transaction data used for demonstration.
+
+---
+
+# Installation & Setup
+
+Clone the repository:
+
+git clone <repository-url>
+
+Navigate to project directory:
+
+cd finance-dashboard
+
+Install dependencies:
+
+npm install
+
+Start development server:
+
+npm run dev
+
+The application will run on:
+
+https://zorvyn-finance-dashboard-neon.vercel.app/
+
+---
+
+# Deployment
+
+The application can be deployed using modern frontend hosting platforms.
+
+Recommended platform:
+
+Vercel
+
+Deployment steps:
+
+1. Push project to GitHub
+2. Import repository in Vercel
+3. Vercel detects the Vite project automatically
+4. Click Deploy
+
+The production build is generated using:
+
+npm run build
+
+---
+
+# Screenshots
+
+Login Page
+Modern authentication interface.
+
+Dashboard Overview
+Financial summary and analytics charts.
+
+Transactions Page
+Detailed transaction management.
+
+Insights Page
+Automated financial insights.
+
+Upload Page
+Bank statement upload and automatic analytics generation.
+
+(Add screenshots here)
+
+---
+
+# Design Principles
+
+The interface is designed following modern SaaS UI principles:
+
+• Clean layout
+• Consistent spacing
+• Responsive design
+• Accessible components
+• Interactive visualizations
+
+The design prioritizes **clarity, usability, and data readability**.
+
+---
+
+# Future Enhancements
+
+Potential improvements include:
+
+• Real backend integration
+• Secure authentication with JWT
+• Cloud database storage
+• AI-powered financial forecasting
+• Multi-currency support
+• Advanced financial reports
+• Mobile application version
+
+---
+
+# Author
+
+Mohan Raj
+
+Frontend Developer and Software Engineering Enthusiast
+
+---
+
+# License
+
+This project is created for educational and evaluation purposes.
